@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sailei.modules.test.lefttree.mapper.TestGoodClassMapper">
+
+	<!-- 通用结果集 -->
+	<sql id="Base_Column_List">
+		a.id AS id,
+		a.parent_id AS parentId,
+		a.parent_ids AS parentIds,
+		a.name AS name,
+		a.sort AS sort,
+		a.create_date AS createDate,
+		a.update_date AS updateDate,
+		a.del_flag AS delFlag,
+		p.name AS "parentName"
+	</sql>
+
+	<!-- 根据记录ID获取记录 -->
+    <select id="getById" resultType="com.sailei.modules.test.lefttree.entity.TestGoodClass">
+		SELECT
+			 <include refid="Base_Column_List"/>
+		FROM test_good_class a
+		LEFT JOIN test_good_class p ON a.parent_id=p.id
+		WHERE a.del_flag='0' and a.id = #{id}
+	</select>
+
+    <!-- 获取记录列表 -->
+    <select id="queryPage" resultType="com.sailei.modules.test.lefttree.entity.TestGoodClass">
+        SELECT
+        	<include refid="Base_Column_List"/>
+        FROM test_good_class a
+        LEFT JOIN test_good_class p ON a.parent_id=p.id
+		WHERE a.del_flag='0'
+    </select>
+
+    <!-- 查询树 -->
+    <select id="tree" resultType="com.sailei.common.base.ZTreeNode">
+		SELECT
+            id AS id,
+            parent_id AS "pId",
+            name AS NAME,
+            ( CASE WHEN (parent_id = 0 OR parent_id IS NULL) THEN 'true' ELSE 'false' END ) AS "open"
+        FROM test_good_class WHERE del_flag=0
+	</select>
+
+	<!-- 保存记录 -->
+	<insert id="save">
+		INSERT INTO test_good_class(
+				id,
+		parent_id,
+		parent_ids,
+		name,
+		sort,
+		create_date,
+		update_date
+		) VALUES (
+				#{id},
+		#{parentId},
+		#{parentIds},
+		#{name},
+		#{sort},
+		#{createDate},
+		#{updateDate}
+		)
+	</insert>
+
+	<!-- 根据ID更新记录 -->
+	<update id="updateById">
+		UPDATE test_good_class SET
+				parent_id = #{parentId},
+		parent_ids = #{parentIds},
+		name = #{name},
+		sort = #{sort},
+		update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+
+	<!--根据ID移除记录-->
+	<update id="remove">
+		UPDATE test_good_class SET del_flag='1' WHERE id = #{id}
+	</update>
+
+	<!-- 根据父ID移除所有子记录 -->
+    <update id="removeRelation">
+        UPDATE test_good_class SET del_flag=1 WHERE id = #{parentId} or parent_ids like CONCAT('%',#{parentId},'%')
+    </update>
+</mapper>

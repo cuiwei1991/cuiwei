@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sailei.modules.gen.mapper.GenTableColumnMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id,
+        a.gen_table_id as genTableId,
+        a.name,
+        a.comments,
+        a.jdbc_type as jdbcType,
+        a.java_type as javaType,
+        a.java_field as javaField,
+        a.is_pk as isPk,
+        a.is_null as isNull,
+        a.is_insert as isInsert,
+        a.is_edit as isEdit,
+        a.is_list as isList,
+        a.is_query as isQuery,
+        a.query_type as queryType,
+        a.show_type as showType,
+        a.dict_type as dictType,
+        a.settings as settings,
+        a.sort,
+        a.create_by as createBy,
+        a.create_date as createDate,
+        a.update_by as updateBy,
+        a.update_date as updateDate,
+        a.remarks,
+        a.del_flag as delFlag
+    </sql>
+
+    <!-- 根据记录ID获取记录 -->
+    <select id="getById" resultType="com.sailei.modules.gen.entity.GenTableColumn">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM gen_table_column a WHERE a.id=#{id}
+    </select>
+    <!-- 根据记录ID获取记录 -->
+    <select id="getByName" resultType="com.sailei.modules.gen.entity.GenTableColumn">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM gen_table_column a WHERE a.gen_table_id=#{genTableId} AND a.name=#{name} limit 1
+    </select>
+
+    <!-- 根据记录ID获取记录 -->
+    <select id="getByGenTableId" resultType="com.sailei.modules.gen.entity.GenTableColumn">
+        SELECT
+        a.*,
+		b.id AS "genTable.id",
+		b.name AS "genTable.name",
+		b.comments AS "genTable.comments",
+		b.class_name AS "genTable.className",
+		b.parent_table AS "genTable.parentTable",
+		b.parent_table_fk AS "genTable.parentTableFk"
+        FROM gen_table_column a JOIN gen_table b ON b.id = a.gen_table_id and  a.gen_table_id=#{id} ORDER BY a.sort
+    </select>
+    <!-- 根据条件获取记录列表 -->
+    <select id="queryPage" resultType="com.sailei.modules.gen.entity.GenTable">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM gen_table a
+        <if test="name != null">
+            WHERE a.name LIKE CONCAT('%',#{name},'%')
+        </if>
+        ORDER BY a.sort
+    </select>
+
+    <!-- 根据条件获取记录列表条数 -->
+    <select id="queryCount" resultType="java.lang.Long">
+        SELECT
+        COUNT(1)
+        FROM gen_table a
+        <if test="name != null">
+            WHERE a.name LIKE CONCAT('%',#{name},'%')
+        </if>
+    </select>
+
+    <!-- 根据条件获取记录列表条数 -->
+    <select id="queryColumnsByTid" resultType="com.sailei.modules.gen.entity.GenTableColumn">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM gen_table_column a WHERE a.gen_table_id=#{genTableId}
+    </select>
+
+    <!--保存记录-->
+    <insert id="insert">
+        INSERT INTO gen_table_column(
+        id,
+        gen_table_id,
+        name,
+        comments,
+        jdbc_type,
+        java_type,
+        java_field,
+        is_pk,
+        is_null,
+        is_insert,
+        is_edit,
+        is_list,
+        is_query,
+        query_type,
+        show_type,
+        dict_type,
+        sort,
+        create_by,
+        create_date,
+        update_by,
+        update_date,
+        remarks
+        ) VALUES (
+        #{id},
+        #{genTableId},
+        #{name},
+        #{comments},
+        #{jdbcType},
+        #{javaType},
+        #{javaField},
+        #{isPk},
+        #{isNull},
+        #{isInsert},
+        #{isEdit},
+        #{isList},
+        #{isQuery},
+        #{queryType},
+        #{showType},
+        #{dictType},
+        #{sort},
+        #{createBy},
+        #{createDate},
+        #{updateBy},
+        #{updateDate},
+        #{remarks}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE gen_table_column SET
+        comments = #{comments},
+        jdbc_type = #{jdbcType},
+        java_type = #{javaType},
+        java_field = #{javaField},
+        is_pk = #{isPk},
+        is_null = #{isNull},
+        is_insert = #{isInsert},
+        is_edit = #{isEdit},
+        is_list = #{isList},
+        is_query = #{isQuery},
+        query_type = #{queryType},
+        show_type = #{showType},
+        dict_type = #{dictType},
+        sort = #{sort},
+        update_by = #{updateBy},
+        update_date = #{updateDate},
+        remarks = #{remarks},
+        del_flag = #{delFlag}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteByGenTable">
+        DELETE FROM gen_table_column
+        WHERE gen_table_id = #{id}
+    </delete>
+</mapper>

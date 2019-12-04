@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html class="bg-white">
+@/**
+@ * 本页面所用的模板变量
+@ *
+@ * tempUrl : 下载模板链接
+@ * formUrl : form提交地址
+@ **/
+<head>
+    <meta charset="utf-8">
+    <title>导入Excel</title>
+    <!--其他插件css-->
+    <link rel="stylesheet" href="${ctxPath}/assets/common/layui/css/layui.css"/>
+    <link href="${ctxPath}/assets/expand/plugins/ztree/zTreeStyle.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<form id="userForm" class="layui-form model-form">
+        <br><br>
+        <div class="layui-form-item">
+            <label class="layui-form-label">选择文件:</label>
+            <div class="layui-input-block">
+                <input id="uploadFile" name="file" type="file" class="layui-input" style="width:90%"/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">文件说明:</label>
+            <div class="layui-input-block" style="color:red;">
+                导入文件不能超过5M,<br>仅允许导入xls/xlsx格式文件!
+            </div>
+        </div>
+        <br><br><br>
+        <div class="layui-form-item" style="float:right;margin-right:5px;">
+            <a class="layui-btn" id="tempDown">下载模板</a>
+            <a class="layui-btn" id="submitImp">导入</a>
+            <a class="layui-btn layui-btn-primary" ew-event="closeDialog">取消</a>
+        </div>
+</form>
+</body>
+@/* 加入contextPath属性和session超时的配置 */
+<script type="text/javascript">
+    var Feng = {
+        ctxPath: "",
+        addCtx: function (ctx) {
+            if (this.ctxPath === "") {
+                this.ctxPath = ctx;
+            }
+        }
+    };
+    Feng.addCtx("${ctxPath}");
+</script>
+<script type="text/javascript" src="${ctxPath}/assets/common/layui/layui.js"></script>
+<script type="text/javascript" src="${ctxPath}/assets/common/js/common.js"></script>
+
+<script type="text/javascript" src="${ctxPath}/assets/expand/plugins/jquery/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="${ctxPath}/assets/expand/plugins/ztree/jquery.ztree.all.min.js"></script>
+
+<script type="text/javascript">
+    layui.use(['layer', 'form', 'admin', 'ax'], function () {
+        var $ = layui.jquery;
+        var form = layui.form;
+        var admin = layui.admin;
+        var layer = layui.layer;
+
+        var tempUrl = Feng.getUrlParam("tempUrl");
+        var formUrl = Feng.getUrlParam("formUrl");
+        $("#importForm").attr("action", formUrl);
+
+        $("#tempDown").click(function () {
+            window.location.href=tempUrl;
+        });
+
+        $("#submitImp").click(function () {
+            var file = $("#uploadFile").val();
+            if(file == '' || file == undefined ){
+                layer.msg("请选择文件");
+                return ;
+            }
+
+            var fileObj = document.getElementById("uploadFile").files[0];
+            var formData = new FormData();
+            formData.append("file", fileObj);
+            $.ajax({
+                url: formUrl,
+                type: 'POST',
+                data: formData,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (r) {
+                    if(r.code === 0){
+                        Feng.success("导入成功!");
+                        admin.putTempData('formOk', true);
+                        admin.closeThisDialog();
+                    }else{
+                        Feng.error(r.msg);
+                    }
+                },
+                error: function (r) {
+                    Feng.error(r.msg);
+                }
+            });
+        });
+    });
+</script>
+</body>
+
+</html>

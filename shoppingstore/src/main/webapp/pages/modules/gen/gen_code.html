@@ -1,0 +1,103 @@
+@layout("/common/_container.html",{bg:"bg-white",js:["/assets/modules/gen/gen_code.js"]}){
+<style>
+    .must-tag {
+        font-size: 14px;
+        color: red;
+    }
+    .layui-col-md6{
+        width: 50%;float: left;
+    }
+    #dirData {
+        display: none;
+        padding: 10px;
+    }
+</style>
+<div class="layui-container">
+<form id="genCode" lay-filter="genCode" class="layui-form">
+    <input type="hidden" class="layui-input" name="genTableId" id="genTableId">
+    <input type="hidden" class="layui-input" name="id" >
+    <div class="layui-form-item">
+        <p style="height: 10px"></p>
+        <strong style="padding-left: 40px;padding-top: 10px;color:red">提示：代码生成会覆盖路径中已经存在的同名文件，请做好备份或选择空白目录生成代码。</strong>
+    </div>
+    <div class="layui-form-item layui-row">
+        <div class="layui-col-md12">
+            <label class="layui-form-label">生成路径:</label>
+            <div class="layui-input-block" style="float: left;margin-left: 0;margin-right: 10px;width: 61.5%">
+                <input name="projectPath" id="projectPath" type="text" placeholder="" class="layui-input">
+            </div>
+            <button class="layui-btn layui-btn-normal" id="getCatalog" style="float: left" type="button"><i class="layui-icon">&#xe632;</i>选择生成目录</button>
+        </div>
+    </div>
+    <div class="layui-form-item layui-row">
+        <div class="layui-col-md6">
+            <label class="layui-form-label" title="生成代码的风格"><span class="must-tag">*</span>代码模式</label>
+            <div class="layui-input-block" >
+                <select name="category" lay-verify="">
+                    <option value="curd">单表</option>
+                    <option value="curd_many">主附表</option>
+                    <option value="tree">树结构</option>
+                    <option value="left_tree">左树右表</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-col-md6">
+            <label class="layui-form-label" title="建议模块包: com.sailei.modules"><span class="must-tag">*</span>包路径</label>
+            <div class="layui-input-block">
+                <input type="text" class="layui-input" name="packageName">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item layui-row">
+        <div class="layui-col-md6">
+            <label class="layui-form-label" title="可理解为子系统名,例如：bsi"><span class="must-tag">*</span>模块名</label>
+            <div class="layui-input-block" >
+                <input name="moduleName" type="text" class="layui-input" placeholder="可理解为子系统名,例如：bsi">
+            </div>
+        </div>
+        <div class="layui-col-md6">
+            <label class="layui-form-label" title="(可选)子文件夹,例如：bsi.withdraw">子模块名</label>
+            <div class="layui-input-block">
+                <input name="subModuleName" type="text" class="layui-input" placeholder="(可选)子文件夹,例如：bsi.withdraw">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item layui-row">
+        <div class="layui-col-md6">
+            <label class="layui-form-label" title="将设置到类描述"><span class="must-tag">*</span>功能描述</label>
+            <div class="layui-input-block" >
+                <input type="text" class="layui-input" name="functionName" placeholder="将设置到类描述">
+            </div>
+        </div>
+        <div class="layui-col-md6">
+            <label class="layui-form-label" title="用作功能提示,如：保存“某某”成功"><span class="must-tag">*</span>功能名</label>
+            <div class="layui-input-block" >
+                <input type="text" class="layui-input" name="functionNameSimple" placeholder="用作功能提示,如：保存“某某”成功">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item layui-row">
+        <div class="layui-col-md6">
+            <label class="layui-form-label" title="功能开发者"><span class="must-tag">*</span>作者</label>
+            <div class="layui-input-block" >
+                <input name="functionAuthor" type="text" class="layui-input">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item text-right">
+        <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+        <button class="layui-btn" lay-filter="btnSubmit" id="btnSubmit" lay-submit="">立即生成</button>
+    </div>
+</form>
+</div>
+<div id="dirData">
+    <form class="layui-form">
+        <div class="layui-form-item" id="test" style="height: 170px;overflow: auto;margin: 20px 0;">
+        </div>
+        <div class="text-center">
+            <div id="dirSetCancel" class="layui-btn layui-btn-primary">取消</div>
+            <div id="dirSetSure" class="layui-btn">确定</div>
+        </div>
+    </form>
+</div>
+@}

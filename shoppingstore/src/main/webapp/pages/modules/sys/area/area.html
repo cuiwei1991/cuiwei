@@ -1,0 +1,38 @@
+@layout("/common/_container.html",{plugins:["ztree"],js:["/assets/modules/sys/area/area.js"]}){
+
+<div class="layui-body-header">
+    <span class="layui-body-header-title">地区管理</span>
+</div>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-sm12 layui-col-md12 layui-col-lg12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div class="layui-form toolbar">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                @if(shiro.hasPermission("area:add")){
+                                <button id="btnAdd" class="layui-btn icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>
+                                @}
+                            </div>
+                        </div>
+                    </div>
+                    <table class="layui-table" id="areaTable" lay-filter="areaTable"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/html" id="tableBar">
+    @if(shiro.hasPermission("area:update")){
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>修改</a>
+    @}
+    @if(shiro.hasPermission("area:delete")){
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete"><i class="layui-icon layui-icon-delete"></i>删除</a>
+    @}
+    @if(shiro.hasPermission("area:add")){
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="addSub"><i class="layui-icon layui-icon-add-1"></i>添加子地区</a>
+    @}
+</script>
+@}

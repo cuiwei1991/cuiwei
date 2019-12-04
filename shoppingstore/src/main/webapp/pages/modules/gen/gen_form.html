@@ -1,0 +1,278 @@
+@layout("/common/_container.html",{bg:"bg-white",js:["/assets/modules/gen/gen_form.js"]}){
+<style>
+    .layui-form-label {
+        text-align: left;
+    }
+    .layui-table-cell {
+        height: unset;
+        overflow: visible;
+    }
+    .layui-table-box, .layui-table-body {
+        overflow: visible;
+    }
+</style>
+<div class="layui-container">
+    <form id="addForm" class="layui-form" lay-filter="dataForm">
+        <br>
+        <br>
+        <br>
+        <div class="layui-form-item layui-row">
+            <div class=" layui-col-md6">
+                <label class="layui-form-label">表名:</label>
+                <div class="layui-input-block">
+                    <input name="name" type="text" placeholder="" class="layui-input" autocomplete="off">
+                </div>
+            </div>
+            <div class=" layui-col-md6">
+                <label class="layui-form-label">说明:</label>
+                <div class="layui-input-block">
+                    <input name="comments" type="text" placeholder="" class="layui-input">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item layui-row">
+            <div class=" layui-col-md6">
+                <label class="layui-form-label">表类型:</label>
+                <div class="layui-input-block">
+                    <select name="tableType" class="layui-input">
+                        <option value="0">单表</option>
+                        <option value="1">主表</option>
+                        <option value="2">附表</option>
+                        <option value="3">树表</option>
+                        <option value="4">左树</option>
+                        <option value="5">右表</option>
+                    </select>
+                </div>
+            </div>
+            <div class=" layui-col-md6">
+                <label class="layui-form-label">类名:</label>
+                <div class="layui-input-block">
+                    <input name="className" type="text" placeholder="" class="layui-input">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item layui-row">
+            <div class=" layui-col-md6">
+                <label class="layui-form-label">主表表名:</label>
+                <div class="layui-input-block">
+                    <select name="mainTableName" lay-verify="mainTableName">
+                        <option value="">请选择主表表名</option>
+                    </select>
+                </div>
+            </div>
+            <div class=" layui-col-md6">
+                <label class="layui-form-label">当前表外键:</label>
+                <div class="layui-input-block">
+                    <input name="parentTableFk" type="text" placeholder="" class="layui-input">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item layui-row">
+            <div class=" layui-col-md6">
+                <label class="layui-form-label">主键策略:</label>
+                <div class="layui-input-block">
+                    <select name="genIdType" id="genIdType" class="layui-input">
+                        <option value="0">UUID</option>
+                        <option value="1">自动递增</option>
+                    </select>
+                </div>
+            </div>
+            <div class=" layui-col-md6">
+            </div>
+        </div>
+        <div class="layui-row">
+            <div class="layui-btn-container">
+                <div class="layui-btn layui-btn-normal" id="addBtn"><i class="layui-icon">&#xe654;</i>增加</div>
+                <div class="layui-btn layui-btn-danger" id="delBtn"><i class="layui-icon layui-icon-delete"></i>删除</div>
+            </div>
+        </div>
+        <div class="layui-row">
+            <div class="layui-tab layui-tab-card" style="margin-top: 0px">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">数据库属性</li>
+                    <li>页面属性</li>
+                </ul>
+                <div class="layui-tab-content" style="padding-top: 0px;padding-left: 5px;padding-right: 5px">
+                    <div class="layui-tab-item layui-show">
+
+                        <!-- 数据表格 -->
+                        <table class="layui-hide" id="dataTable" lay-filter="dataTable">
+
+                        </table>
+
+                        <!-- 物理类型 -->
+                        <script type="text/html" id="dataTable_type">
+                            <div class="layui-form-item layui-row">
+                                <div class=" layui-col-md6">
+                                    <input name="{{d.row_sort}}" value="{{d.type}}" lay-filter="dataTable_type" type="text" class="layui-input HandoverCompany" style="position:absolute;z-index:2;width:82%;" autocomplete="off">
+                                    <select name="{{d.row_sort}}" value="{{d.type}}" lay-filter="dataTable_type" lay-search>
+                                        <option value="varchar(64)" >varchar(64)</option>
+                                        <option value="int(11)" >int(11)</option>
+                                        <option value="datetime(0)" >datetime(0)</option>
+                                        <option value="decimal(18,2)" >decimal(18,2)</option>
+                                        <option value="text" >text</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </script>
+
+                        <!-- 主键 -->
+                        <script type="text/html" id="dataTable_isPk">
+                            {{# if (d.isPk == 1) { }}
+                            <input name="{{d.row_sort}}" type="checkbox" lay-skin="primary" lay-filter="dataTable_isPk" checked>
+                            {{# } else { }}
+                            <input name="{{d.row_sort}}" type="checkbox" lay-skin="primary" lay-filter="dataTable_isPk">
+                            {{# } }}
+                        </script>
+
+                        <!-- 可空 -->
+                        <script type="text/html" id="dataTable_isNull">
+                            {{# if (d.isNull == 1) { }}
+                            <input name="{{d.row_sort}}" type="checkbox" lay-skin="primary" lay-filter="dataTable_isNull" checked>
+                            {{# } else { }}
+                            <input name="{{d.row_sort}}" type="checkbox" lay-skin="primary" lay-filter="dataTable_isNull">
+                            {{# } }}
+                        </script>
+
+                        <!-- 插入 -->
+                        <script type="text/html" id="dataTable_isInsert">
+                            {{# if (d.isInsert == 1) { }}
+                            <input name="{{d.row_sort}}" type="checkbox" lay-skin="primary" lay-filter="dataTable_isInsert" checked>
+                            {{# } else { }}
+                            <input name="{{d.row_sort}}" type="checkbox" lay-skin="primary" lay-filter="dataTable_isInsert">
+                            {{# } }}
+                        </script>
+
+                        <!-- 编辑 -->
+                        <script type="text/html" id="dataTable_isEdit">
+                            {{# if (d.isEdit == 1) { }}
+                            <input name="{{d.row_sort}}" type="checkbox" lay-skin="primary" lay-filter="dataTable_isEdit" checked>
+                            {{# } else { }}
+                            <input name="{{d.row_sort}}" type="checkbox" lay-skin="primary" lay-filter="dataTable_isEdit">
+                            {{# } }}
+                        </script>
+
+                    </div>
+                    <div class="layui-tab-item">
+                        <!-- 数据表格 -->
+                        <table id="columnTable" lay-filter="columnTable">
+
+                        </table>
+
+                        <!-- Java类型 -->
+                        <script type="text/html" id="dataTable_javaType">
+                            <select name="{{d.row_sort}}" value="{{d.javaType}}" lay-filter="dataTable_javaType">
+                                {{# if (d.javaType == 'String') { }}
+                                <option value="String" selected>String</option>
+                                {{# } else { }}
+                                <option value="String">String</option>
+                                {{# } }}
+                                {{# if (d.javaType == 'Integer') { }}
+                                <option value="Integer" selected>Integer</option>
+                                {{# } else { }}
+                                <option value="Integer">Integer</option>
+                                {{# } }}
+                                {{# if (d.javaType == 'java.util.Date') { }}
+                                <option value="java.util.Date" selected>Date</option>
+                                {{# } else { }}
+                                <option value="java.util.Date">Date</option>
+                                {{# } }}
+                                {{# if (d.javaType == 'java.math.BigDecimal') { }}
+                                <option value="java.math.BigDecimal" selected>BigDecimal</option>
+                                {{# } else { }}
+                                <option value="java.math.BigDecimal">BigDecimal</option>
+                                {{# } }}
+                            </select>
+                        </script>
+
+                        <!-- 列表 -->
+                        <script type="text/html" id="dataTable_isList">
+                            {{# if (d.isList == 1) { }}
+                            <input name="{{d.row_sort}}" type="checkbox" lay-skin="primary" lay-filter="dataTable_isList" checked>
+                            {{# } else { }}
+                            <input name="{{d.row_sort}}" type="checkbox" lay-skin="primary" lay-filter="dataTable_isList">
+                            {{# } }}
+                        </script>
+
+                        <!-- 列表 -->
+                        <script type="text/html" id="dataTable_isQuery">
+                            {{# if (d.isQuery == 1) { }}
+                            <input name="{{d.row_sort}}" type="checkbox" lay-skin="primary" lay-filter="dataTable_isQuery" checked>
+                            {{# } else { }}
+                            <input name="{{d.row_sort}}" type="checkbox" lay-skin="primary" lay-filter="dataTable_isQuery">
+                            {{# } }}
+                        </script>
+
+                        <!-- 查询匹配方式 -->
+                        <script type="text/html" id="dataTable_queryType">
+                            <select name="{{d.row_sort}}" value="{{d.javaType}}" lay-filter="dataTable_queryType">
+                                {{# if (d.queryType == '=') { }}
+                                <option value="=" selected>=</option>
+                                {{# } else { }}
+                                <option value="=">=</option>
+                                {{# } }}
+                                {{# if (d.queryType == 'between') { }}
+                                <option value="between" selected>Between</option>
+                                {{# } else { }}
+                                <option value="between">Between</option>
+                                {{# } }}
+                                {{# if (d.queryType == 'like') { }}
+                                <option value="like" selected>like</option>
+                                {{# } else { }}
+                                <option value="like">like</option>
+                                {{# } }}
+                            </select>
+                        </script>
+
+                        <!-- 显示表单类型 -->
+                        <script type="text/html" id="dataTable_showType">
+                            <select name="{{d.row_sort}}" value="{{d.showType}}" lay-filter="dataTable_showType">
+                                {{# if (d.showType == 'input') { }}
+                                <option value="input" selected>单行文本</option>
+                                {{# } else { }}
+                                <option value="input">单行文本</option>
+                                {{# } }}
+                                {{# if (d.showType == 'textarea') { }}
+                                <option value="textarea" selected>多行文本</option>
+                                {{# } else { }}
+                                <option value="textarea">多行文本</option>
+                                {{# } }}
+                                {{# if (d.showType == 'text') { }}
+                                <option value="text" selected>富文本</option>
+                                {{# } else { }}
+                                <option value="text">富文本</option>
+                                {{# } }}
+                                {{# if (d.showType == 'select') { }}
+                                <option value="select" selected>下拉选</option>
+                                {{# } else { }}
+                                <option value="select">下拉选</option>
+                                {{# } }}
+                                {{# if (d.showType == 'dateselect') { }}
+                                <option value="dateselect" selected>日期选择</option>
+                                {{# } else { }}
+                                <option value="dateselect">日期选择</option>
+                                {{# } }}
+                                {{# if (d.showType == 'fileselect') { }}
+                                <option value="fileselect" selected>文件上传</option>
+                                {{# } else { }}
+                                <option value="fileselect">文件上传</option>
+                                {{# } }}
+                            </select>
+                        </script>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <br>
+        <div class="layui-row">
+            <div class="layui-btn-container" style="float: right;">
+                <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+                <a class="layui-btn layui-btn-normal" lay-submit="" lay-filter="dataForm">保存</a>
+            </div>
+        </div>
+    </form>
+    <br>
+</div>
+@}

@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+	<name>viewListJS</name>
+	<filePath>src/main/webapp/assets/modules/${moduleName}/${subModuleName}</filePath>
+	<fileName>${className}List.js</fileName>
+	<content><![CDATA[
+layui.use(['layer', 'form', 'table', 'admin', 'ax', 'laydate'], function () {
+    var $ = layui.jquery;
+    var layer = layui.layer;
+    var form = layui.form;
+    var table = layui.table;
+    var $ax = layui.ax;
+    var admin = layui.admin;
+    var laydate = layui.laydate;
+
+    /**
+     * 定义全程变量
+     */
+    var ${ClassName} = {
+        tableId: "dataTable",    //表格id
+        condition: {
+            id: ""
+        }
+    };
+
+    /**
+     * 初始化表格的列
+     */
+    ${ClassName}.initColumn = function () {
+        return [[
+            {type: 'checkbox'},
+            <#list table.columnList as c>
+			<#if c.isList == '1'>
+				{field: '${c.javaField}', sort: true, title: '${c.comments}'},
+			</#if>
+            </#list>
+            {align: 'center', toolbar: '#tableBar', title: '操作', minWidth: 200}
+        ]];
+    };
+
+    /**
+     * 点击查询按钮
+     */
+    ${ClassName}.search = function () {
+        var queryData = {};
+        <#list table.columnList as c>
+        <#if c.isQuery == '1'>
+        	<#if c.queryType ?? && c.queryType == 'between'>
+        queryData['begin${c.javaField?cap_first}'] = $("#begin${c.javaField?cap_first}Id").val();
+        queryData['end${c.javaField?cap_first}'] = $("#end${c.javaField?cap_first}Id").val();
+        	<#else>
+        queryData['${c.javaField}'] = $("#${c.javaField}Id").val();
+        	</#if>
+		</#if>
+		</#list>
+        table.reload(${ClassName}.tableId, {where: queryData});
+    };
+
+    /**
+     * 弹出添加
+     */
+    ${ClassName}.openAdd${ClassName} = function () {
+        admin.putTempData('formOk', false);
+        top.layui.admin.open({
+            type: 2,
+            title: '添加',
+            area: ['80%','80%'],
+            content: Feng.ctxPath + '/${urlPrefix}/index_add',
+            end: function () {
+                admin.getTempData('formOk') && table.reload(${ClassName}.tableId);
+            }
+        });
+    };
+
+    /**
+     * 点击编辑
+     */
+    ${ClassName}.onEdit${ClassName} = function (data) {
+        admin.putTempData('formOk', false);
+        top.layui.admin.open({
+            type: 2,
+            title: '编辑',
+            area: ['80%','80%'],
+            content: Feng.ctxPath + '/${urlPrefix}/index_edit?id=' + data.${table.pkField},
+            end: function () {
+                admin.getTempData('formOk') && table.reload(${ClassName}.tableId);
+            }
+        });
+    };
+
+    /**
+     * 删除
+     *
+     * @param data 点击按钮时候的行数据
+     */
+    ${ClassName}.onRemove${ClassName} = function (data) {
+        var operation = function () {
+            var ajax = new $ax(Feng.ctxPath + "/${urlPrefix}/remove", function () {
+                Feng.success("删除成功!");
+                table.reload(${ClassName}.tableId);
+            }, function (data) {
+                Feng.error(data.msg);
+            });
+            ajax.set("id", data.${table.pkField});
+            ajax.start();
+        };
+        Feng.confirm("是否删除选中的记录?", operation);
+    };
+
+
+    /** 渲染表格 */
+    var tableResult = table.render({
+        elem: '#' + ${ClassName}.tableId,
+        url: Feng.ctxPath + '/${urlPrefix}/list',
+        page: true,
+        height: "full-98",
+        limits: [10,20,30,50,100],
+        cellMinWidth: 100,
+        cols: ${ClassName}.initColumn()
+    });
+
+    /** 搜索按钮点击事件 */
+    $('#btnSearch').click(function () {
+        ${ClassName}.search();
+    });
+
+    /** 添加按钮点击事件 */
+    $('#btnAdd').click(function () {
+        ${ClassName}.openAdd${ClassName}();
+    });
+
+    /** 工具条点击事件 */
+    table.on('tool(' + ${ClassName}.tableId + ')', function (obj) {
+        var data = obj.data;
+        var layEvent = obj.event;
+
+        if (layEvent === 'edit') {
+            ${ClassName}.onEdit${ClassName}(data);
+        } else if (layEvent === 'remove') {
+            ${ClassName}.onRemove${ClassName}(data);
+        }else if (layEvent === 'view') {
+            ${ClassName}.onView${ClassName}(data);
+        }
+    });
+
+<#list table.columnList as c>
+	<#if c.isQuery == '1'>
+		<#if c.showType == "select" && c.dictType?? && c.dictType != "">
+    /** 初始化select */
+	var ajax${c.javaField?cap_first} = new $ax(Feng.ctxPath + "/sys/dictType/dictType?dictType=${c.dictType}");
+    var result${c.javaField?cap_first} = ajax${c.javaField?cap_first}.start();
+    if(result${c.javaField?cap_first}.code === 0){
+		for (var i = 0; i < result${c.javaField?cap_first}.data.length; i++) {
+			var code = result${c.javaField?cap_first}.data[i].code;
+			var name = result${c.javaField?cap_first}.data[i].name;
+			$('select[name=${c.javaField}]').append('<option value="' + code + '">' + name + '</option>');
+		}
+    }
+    form.render('select', '${className}Form');
+		<#elseif c.showType == "dateselect">
+			<#if c.queryType ?? && c.queryType == 'between'>
+	/** 初始化时间选择器 */
+    $('.datetime').each(function(){
+        laydate.render({
+            elem: this
+            ,trigger: 'click',
+            type: 'datetime',
+            range: $(this).hasClass('date-range')
+        });
+    });
+    <#break>
+			</#if>
+		</#if>
+	</#if>
+</#list>
+
+	/**如果排序使用后台数据库，添加以下内容*/
+    table.on('sort(' + ${ClassName}.tableId + ')', function(obj){ //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+        console.log(obj.field); //当前排序的字段名
+        console.log(obj.type); //当前排序类型：desc（降序）、asc（升序）、null（空对象，默认排序）
+        console.log(this); //当前排序的 th 对象
+
+        //尽管我们的 table 自带排序功能，但并没有请求服务端。
+        //有些时候，你可能需要根据当前排序的字段，重新向服务端发送请求，从而实现服务端排序，如：
+        table.reload(${ClassName}.tableId, {
+            initSort: obj //记录初始排序，如果不设的话，将无法标记表头的排序状态。 layui 2.1.1 新增参数
+            ,where: { //请求参数（注意：这里面的参数可任意定义，并非下面固定的格式）
+                field: obj.field //排序字段   在接口作为参数字段  field order
+                ,order: obj.type //排序方式   在接口作为参数字段  field order
+            }
+        });
+    });
+});
+]]>
+	</content>
+</template>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+	<name>viewList</name>
+	<filePath>src/main/webapp/pages/modules/${moduleName}/${subModuleName}</filePath>
+	<fileName>${className}AddForm.html</fileName>
+	<content><![CDATA[
+@layout("/common/_container.html",{bg:"bg-white",js:["/assets/modules/${moduleName}/${subModuleName}/${className}AddForm.js"]}){
+<form id="${className}Form" lay-filter="${className}Form" class="layui-form model-form">
+    <input name="${table.pk}" type="hidden"/>
+    <#list table.columnList as c>
+    	<#if c.isInsert == '1' && c.isPk != '1' && c.javaField != 'createDate' && c.javaField != 'updateDate' && c.javaField != 'delFlag'>
+		<div class="layui-form-item">
+			<label class="layui-form-label">${c.comments}:
+			<#if c.isNull != "1">
+				<span style="color: red;">*</span>
+			</#if>
+			</label>
+			<div class="layui-input-block">
+			<#if c.showType == "input">
+				<input name="${c.javaField}" id="${c.javaField}Id" placeholder="请输入${c.comments}" type="text" class="layui-input" required/>
+			<#elseif c.showType == "textarea">
+				<textarea name="${c.javaField}" id="${c.javaField}Id"></textarea>
+			<#elseif c.showType == "select">
+				<select name="${c.javaField}" id="${c.javaField}Id">
+					<option value="" >请选择</option>
+				</select>
+			<#elseif c.showType == "dateselect">
+				<input name="${c.javaField}" id="${c.javaField}Id" placeholder="请选择时间，例如2015-01-12 12:00" type="text" class="layui-input datetime" autocomplete="off"/>
+			<#elseif c.showType == "fileselect">
+				<input name="${c.javaField}" id="${c.javaField}Id" type="hidden"/>
+				<input type="file" onchange="${c.javaField}Upload()" id="${c.javaField}Path"
+                                   style="position: absolute;opacity: 0;z-index: 100;width: 32px;height: 32px;" title="图片大小不超过2M"/>
+                <image src="/assets/common/images/upload_default.jpg" id="${c.javaField}Img" style="width: 32px;height: 32px"/>
+			<#elseif c.showType == "text">
+				<textarea name="${c.javaField}" id="${c.javaField}Id" style="display: none;"></textarea>
+			</#if>
+			</div>
+		</div>
+		</#if>
+    </#list>
+    <div class="layui-form-item text-right">
+        <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+        <button class="layui-btn" lay-filter="btnSubmit" lay-submit>保存</button>
+    </div>
+</form>
+<script>
+<#list table.columnList as c>
+	<#if c.showType == "fileselect">
+	function ${c.javaField}Upload(){
+		var $=layui.jquery;
+		var fileObj = document.getElementById("${c.javaField}Path").files[0];
+		var formData = new FormData();
+		formData.append("file", fileObj);
+		formData.append("path", "${className}");
+		$.ajax({
+			url: Feng.ctxPath + '/system/uploadPhoto',
+			type: 'POST',
+			data: formData,
+			async: false,
+			cache: false,
+			contentType: false,
+			processData: false,
+			success: function (r) {
+				if(r.code === 0){
+					$("#${c.javaField}Img").attr("src", r.address);
+					$("#${c.javaField}Id").val(r.address);
+					layer.msg("上传成功！");
+				}else{
+					layer.msg(r.msg);
+				}
+			},
+			error: function (r) {
+				layer.msg("上传失败!");
+			}
+		});
+	}
+	</#if>
+</#list>
+</script>
+@}
+]]></content>
+</template>

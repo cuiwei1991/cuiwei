@@ -1,0 +1,52 @@
+@layout("/common/_container.html",{bg:"bg-white",js:["/assets/modules/sys/set/set_edit.js"]}){
+<form id="setForm" lay-filter="setForm" class="layui-form model-form">
+    <input name="setId" type="hidden"/>
+    <div class="layui-form-item">
+        <label class="layui-form-label">标题<span style="color: red;">*</span></label>
+        <div class="layui-input-block">
+            <input name="title" placeholder="请输入标题" type="text" class="layui-input" lay-verify="required" required/>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">类型<span style="color: red;">*</span></label>
+        <div class="layui-input-block">
+            <select name="setType" id="setType" class="layui-input">
+                <option value="0">系统</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">配置值类型<span style="color: red;">*</span></label>
+        <div class="layui-input-block">
+            <select name="valueType" id="valueType" class="layui-input">
+                <option value="0">字符串</option>
+                <option value="1">数字</option>
+                <option value="2">浮点</option>
+                <option value="3">时间</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">配置键<span style="color: red;">*</span></label>
+        <div class="layui-input-block">
+            <input id="setKey" name="setKey" placeholder="请输入配置键" type="text" class="layui-input" readonly="readonly" required autocomplete="off"/>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">配置值<span style="color: red;">*</span></label>
+        <div class="layui-input-block">
+            <input id="setValue" name="setValue" placeholder="请输入配置值" type="text" class="layui-input" lay-verify="required" required autocomplete="off"/>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">描述</label>
+        <div class="layui-input-block">
+            <input id="remark" name="remark" placeholder="请输入描述" type="text" class="layui-input"/>
+        </div>
+    </div>
+    <div class="layui-form-item text-right">
+        <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+        <button class="layui-btn" lay-filter="btnSubmit" lay-submit>保存</button>
+    </div>
+</form>
+@}

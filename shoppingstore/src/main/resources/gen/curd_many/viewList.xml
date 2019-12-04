@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+	<name>viewList</name>
+	<filePath>src/main/webapp/pages/modules/${moduleName}/${subModuleName}</filePath>
+	<fileName>${className}List.html</fileName>
+	<content><![CDATA[
+@layout("/common/_container.html",{js:["/assets/modules/${moduleName}/${subModuleName}/${className}List.js"]}){
+
+<div class="layui-body-header">
+    <span class="layui-body-header-title">${functionNameSimple}列表</span>
+</div>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-sm12 layui-col-md12 layui-col-lg12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                <form id="${className}Form" lay-filter="${className}Form" class="layui-form">
+                    <div class="layui-form toolbar">
+                        <div class="layui-form-item">
+					<#list table.columnList as c>
+						<#if c.isQuery == '1'>
+                            <div class="layui-inline">
+                            <#if c.showType == "select">
+							<select name="${c.javaField}" id="${c.javaField}Id">
+								<option value="" >请选择</option>
+							</select>
+							<#elseif c.showType == "dateselect" && c.queryType ?? && c.queryType == 'between'>
+							<input name="begin${c.javaField?cap_first}" id="begin${c.javaField?cap_first}Id" placeholder="请选择开始时间" type="text" class="layui-input datetime" />
+							</div>
+							<div class="layui-inline">
+							<input name="end${c.javaField?cap_first}" id="end${c.javaField?cap_first}Id" placeholder="请选择结束时间" type="text" class="layui-input datetime" />
+							<#else>
+							<input name="${c.javaField}" id="${c.javaField}Id" placeholder="请输入${c.comments}" type="text" class="layui-input" />
+							</#if>
+                            </div>
+						</#if>
+					</#list>
+                            <div class="layui-inline">
+                                <a id="btnSearch" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索</a>
+                                <a id="btnAdd" class="layui-btn icon-btn"><i class="layui-icon">&#xe654;</i>添加</a>
+                            </div>
+                        </div>
+                    </div>
+                    </form>
+                    <table class="layui-table" id="dataTable" lay-filter="dataTable"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="tableBar">
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>修改</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="remove"><i class="layui-icon layui-icon-delete"></i>删除</a>
+</script>
+@}
+]]></content>
+</template>

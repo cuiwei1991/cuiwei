@@ -1,0 +1,40 @@
+@layout("/common/_container.html",{bg:"bg-white",js:["/assets/modules/test/lefttree/testGoodClassAddForm.js"]}){
+<form id="testGoodClassForm" lay-filter="testGoodClassForm" class="layui-form model-form">
+		<br>
+		<br>
+    <input name="id" type="hidden"/>
+    <div class="layui-form-item">
+        <label class="layui-form-label">父节点<span style="color: red;">*</span></label>
+        <div class="layui-input-block">
+            <input id="parentId" name="parentId" type="hidden" value="${testGoodClass.id!}">
+            <input id="parentName" name="parentName" value="${testGoodClass.name!}" placeholder="请选择父节点" type="text" class="layui-input" lay-verify="required" required autocomplete="off"/>
+        </div>
+    </div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">分类名称:
+			<span style="color: red;">*</span>
+		</label>
+		<div class="layui-input-block">
+			<input name="name" id="nameId" placeholder="请输入分类名称" type="text" class="layui-input" required/>
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">排序:
+			<span style="color: red;">*</span>
+		</label>
+		<div class="layui-input-block">
+			<input name="sort" id="sortId" placeholder="请输入排序" type="text" class="layui-input" required/>
+		</div>
+	</div>
+    	<br>
+		<br>
+		<br>
+		<br>
+    <div class="layui-form-item text-right">
+        <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+        <button class="layui-btn" lay-filter="btnSubmit" lay-submit>保存</button>
+    </div>
+</form>
+<script>
+</script>
+@}

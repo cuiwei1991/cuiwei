@@ -1,0 +1,69 @@
+@layout("/common/_container.html",{bg:"bg-white",js:["/assets/modules/test/lefttree/testGoodInfoEditForm.js"]}){
+<form id="testGoodInfoForm" lay-filter="testGoodInfoForm" class="layui-form model-form">
+
+		<input name="id" type="hidden"/>
+		<div class="layui-form-item">
+			<label class="layui-form-label">商品编码
+				<span style="color: red;">*</span>
+			</label>
+			<div class="layui-input-block">
+				<input name="goodCode" id="goodCodeId" placeholder="请输入商品编码" type="text" class="layui-input" required/>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">商品名称
+				<span style="color: red;">*</span>
+			</label>
+			<div class="layui-input-block">
+				<input name="title" id="titleId" placeholder="请输入商品名称" type="text" class="layui-input" required/>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">商品描述
+				<span style="color: red;">*</span>
+			</label>
+			<div class="layui-input-block">
+				<input name="deion" id="deionId" placeholder="请输入商品描述" type="text" class="layui-input" required/>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">商品图片
+				<span style="color: red;">*</span>
+			</label>
+			<div class="layui-input-block">
+				<input name="image" id="imageId" placeholder="请输入商品图片" type="text" class="layui-input" required/>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">是否热门
+				<span style="color: red;">*</span>
+			</label>
+			<div class="layui-input-block">
+				<input name="isRecommend" id="isRecommendId" placeholder="请输入是否热门" type="text" class="layui-input" required/>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">价格
+				<span style="color: red;">*</span>
+			</label>
+			<div class="layui-input-block">
+				<input name="price" id="priceId" placeholder="请输入价格" type="text" class="layui-input" required/>
+			</div>
+		</div>
+		<div class="layui-form-item">
+			<label class="layui-form-label">分类
+				<span style="color: red;">*</span>
+			</label>
+			<div class="layui-input-block">
+				<input id="classId" name="classId" type="hidden" value="">
+            	<input id="classIdName" name="classIdName" value="" placeholder="请选择父节点" type="text" class="layui-input" lay-verify="required" required autocomplete="off"/>
+            </div>
+		</div>
+    <div class="layui-form-item text-right">
+        <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+        <button class="layui-btn" lay-filter="btnSubmit" lay-submit>保存</button>
+    </div>
+</form>
+<script>
+</script>
+@}

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+	<name>mapper</name>
+	<filePath>src/main/java/${packageName}/${moduleName}/${subModuleName}/mapper/xml</filePath>
+	<fileName>${ClassName}Mapper.xml</fileName>
+	<content><![CDATA[
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${packageName}.${moduleName}<#if subModuleName != "">.${subModuleName}</#if>.mapper.${ClassName}Mapper">
+
+	<!-- 通用结果集 -->
+	<sql id="Base_Column_List">
+		<#if table.parentExists>
+		p.name AS ${table.parentTablePk}Name,
+		</#if>
+		<#assign columnField>
+			<#list table.columnList as c>
+		a.${c.name} AS ${c.javaFieldId},
+			</#list>
+		</#assign>
+		${columnField?substring(0, columnField?last_index_of(","))}
+	</sql>
+
+	<!-- 根据记录ID获取记录 -->
+    <select id="getById" resultType="${packageName}.${moduleName}<#if subModuleName != "">.${subModuleName}</#if>.entity.${ClassName}">
+		SELECT
+			 <include refid="Base_Column_List"/>
+		FROM ${table.name} a
+		LEFT JOIN ${table.parent.name} p ON a.${table.parentTableFk}=p.${table.parent.pk}
+		WHERE a.del_flag='0' and p.del_flag='0' and a.${table.pk} = ${"#"}{id}
+	</select>
+
+    <!-- 根据条件获取记录列表 -->
+    <select id="queryPage" resultType="${packageName}.${moduleName}<#if subModuleName != "">.${subModuleName}</#if>.entity.${ClassName}">
+        SELECT
+        	<include refid="Base_Column_List"/>
+        FROM ${table.name} a
+        LEFT JOIN ${table.parent.name} p ON a.${table.parentTableFk}=p.${table.parent.pk}
+		WHERE a.del_flag='0' and p.del_flag='0'
+		<#list table.columnList as c>
+			<#if (c.isQuery?? && c.isQuery == "1") >
+				<#if c.queryType ?? && c.queryType == 'between'>
+		<if test="begin${c.simpleJavaField?cap_first} != null and end${c.simpleJavaField?cap_first} != null and begin${c.simpleJavaField?cap_first} != '' and end${c.simpleJavaField?cap_first} != ''">
+				<#else>
+		<if test="${c.simpleJavaField} != null and ${c.javaFieldId} != ''">
+				</#if>
+				<#if c.queryType ?? && c.queryType == 'between'>
+		AND a.${c.name} BETWEEN ${"#"}{begin${c.simpleJavaField?cap_first}} AND ${"#"}{end${c.simpleJavaField?cap_first}}
+				<#elseif c.queryType ?? && c.queryType == 'like'>
+		AND a.${c.name} LIKE concat('%',${"#"}{${c.javaFieldId}},'%')
+				<#else>
+		AND a.${c.name} ${c.queryType} ${"#"}{${c.javaFieldId}}
+				</#if>
+		</if>
+			</#if>
+		</#list>
+		<if test="relationTreeId != null and relationTreeId != '' and relationTreeId != 0">
+		AND a.${table.parentTableFk} = ${"#"}{relationTreeId}
+		</if>
+		<choose>
+            <when test="orderBy != null and orderBy != ''">
+                ORDER BY ${"$"}{orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.${table.pk} DESC
+            </otherwise>
+        </choose>
+        <if test="page !=null and page != -1 and limit != null and limit != ''">
+            limit ${"$"}{page},${"$"}{limit}
+        </if>
+    </select>
+
+  	<!-- 根据条件获取记录列表条数 -->
+    <select id="queryCount" resultType="java.lang.Long">
+        SELECT
+            COUNT(1)
+        FROM ${table.name} a
+        LEFT JOIN ${table.parent.name} p ON a.${table.parentTableFk}=p.${table.parent.pk}
+		WHERE a.del_flag='0' and p.del_flag='0'
+		<#list table.columnList as c>
+			<#if (c.isQuery?? && c.isQuery == "1") >
+				<#if c.queryType ?? && c.queryType == 'between'>
+		<if test="begin${c.simpleJavaField?cap_first} != null and end${c.simpleJavaField?cap_first} != null">
+				<#else>
+		<if test="${c.simpleJavaField} != null and ${c.javaFieldId} != ''">
+				</#if>
+				<#if c.queryType ?? && c.queryType == 'between'>
+		AND a.${c.name} BETWEEN ${"#"}{begin${c.simpleJavaField?cap_first}} AND ${"#"}{end${c.simpleJavaField?cap_first}}
+				<#elseif c.queryType ?? && c.queryType == 'like'>
+		AND a.${c.name} LIKE concat('%',${"#"}{${c.javaFieldId}},'%')
+				<#else>
+		AND a.${c.name} ${c.queryType} ${"#"}{${c.javaFieldId}}
+				</#if>
+		</if>
+			</#if>
+		</#list>
+    </select>
+
+	<!-- 保存记录 -->
+	<insert id="save">
+		INSERT INTO ${table.name}(
+		<#assign insertField>
+			<#list table.columnList as c>
+				<#if c.isInsert?? && c.isInsert == "1" && c.javaField != 'delFlag'>
+				<#if !(c.isPk == "1" && table.genIdType == "1") >
+		${c.name},
+				</#if>
+				</#if>
+			</#list>
+		</#assign>
+		${insertField?substring(0, insertField?last_index_of(","))}
+		) VALUES (
+		<#assign insertJavaField>
+			<#list table.columnList as c>
+				<#if c.isInsert?? && c.isInsert == "1" && c.javaField != 'delFlag'>
+				<#if !(c.isPk == "1" && table.genIdType == "1") >
+		${"#"}{${c.javaFieldId}},
+				</#if>
+				</#if>
+			</#list>
+		</#assign>
+		${insertJavaField?substring(0, insertJavaField?last_index_of(","))}
+		)
+	</insert>
+
+	<!-- 根据ID更新记录 -->
+	<update id="updateById">
+		UPDATE ${table.name} SET
+			<#assign updateField>
+				<#list table.columnList as c>
+					<#if c.isEdit?? && c.isEdit == "1" && c.isPk != "1" && c.javaField != 'delFlag'>
+		${c.name} = ${"#"}{${c.javaFieldId}},
+					</#if>
+				</#list>
+			</#assign>
+		${updateField?substring(0, updateField?last_index_of(","))}
+		WHERE ${table.pk} = ${"#"}{${table.pkField}}
+	</update>
+
+	<!--根据ID移除记录-->
+	<update id="remove">
+		UPDATE ${table.name} SET del_flag='1' WHERE ${table.pk} = ${"#"}{id}
+	</update>
+</mapper>]]>
+	</content>
+</template>

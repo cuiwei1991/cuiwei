@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+	<name>mapper</name>
+	<filePath>src/main/java/${packageName}/${moduleName}/${subModuleName}/mapper/xml</filePath>
+	<fileName>${ClassName}Mapper.xml</fileName>
+	<content><![CDATA[
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${packageName}.${moduleName}<#if subModuleName != "">.${subModuleName}</#if>.mapper.${ClassName}Mapper">
+
+	<!-- 通用结果集 -->
+	<sql id="Base_Column_List">
+		<#list table.columnList as c>
+		a.${c.name} AS ${c.javaFieldId},
+		</#list>
+		p.name AS "parentName"
+	</sql>
+
+	<!-- 根据记录ID获取记录 -->
+    <select id="getById" resultType="${packageName}.${moduleName}<#if subModuleName != "">.${subModuleName}</#if>.entity.${ClassName}">
+		SELECT
+			 <include refid="Base_Column_List"/>
+		FROM ${table.name} a
+		LEFT JOIN ${table.name} p ON a.parent_id=p.id
+		WHERE a.del_flag='0' and a.${table.pk} = ${"#"}{id}
+	</select>
+
+    <!-- 获取记录列表 -->
+    <select id="queryPage" resultType="${packageName}.${moduleName}<#if subModuleName != "">.${subModuleName}</#if>.entity.${ClassName}">
+        SELECT
+        	<include refid="Base_Column_List"/>
+        FROM ${table.name} a
+        LEFT JOIN ${table.name} p ON a.parent_id=p.id
+		WHERE a.del_flag='0'
+    </select>
+
+    <!-- 查询树 -->
+    <select id="tree" resultType="com.sailei.common.base.ZTreeNode">
+		SELECT
+            id AS id,
+            parent_id AS "pId",
+            name AS NAME,
+            ( CASE WHEN (parent_id = 0 OR parent_id IS NULL) THEN 'true' ELSE 'false' END ) AS "open"
+        FROM ${table.name} WHERE del_flag=0
+	</select>
+
+	<!-- 保存记录 -->
+	<insert id="save">
+		INSERT INTO ${table.name}(
+		<#assign insertField>
+			<#list table.columnList as c>
+				<#if c.isInsert?? && c.isInsert == "1" && c.javaField != 'delFlag'>
+				<#if !(c.isPk == "1" && table.genIdType == "1") >
+		${c.name},
+				</#if>
+				</#if>
+			</#list>
+		</#assign>
+		${insertField?substring(0, insertField?last_index_of(","))}
+		) VALUES (
+		<#assign insertJavaField>
+			<#list table.columnList as c>
+				<#if c.isInsert?? && c.isInsert == "1" && c.javaField != 'delFlag'>
+				<#if !(c.isPk == "1" && table.genIdType == "1") >
+		${"#"}{${c.javaFieldId}},
+				</#if>
+				</#if>
+			</#list>
+		</#assign>
+		${insertJavaField?substring(0, insertJavaField?last_index_of(","))}
+		)
+	</insert>
+
+	<!-- 根据ID更新记录 -->
+	<update id="updateById">
+		UPDATE ${table.name} SET
+			<#assign updateField>
+				<#list table.columnList as c>
+					<#if c.isEdit?? && c.isEdit == "1" && c.isPk != "1" && c.javaField != 'delFlag'>
+		${c.name} = ${"#"}{${c.javaFieldId}},
+					</#if>
+				</#list>
+			</#assign>
+		${updateField?substring(0, updateField?last_index_of(","))}
+		WHERE ${table.pk} = ${"#"}{${table.pkField}}
+	</update>
+
+	<!--根据ID移除记录-->
+	<update id="remove">
+		UPDATE ${table.name} SET del_flag='1' WHERE ${table.pk} = ${"#"}{id}
+	</update>
+
+	<!-- 根据父ID移除所有子记录 -->
+    <update id="removeRelation">
+        UPDATE ${table.name} SET del_flag=1 WHERE ${table.pk} = ${"#"}{parentId} or parent_ids like CONCAT('%',${"#"}{parentId},'%')
+    </update>
+</mapper>]]>
+	</content>
+</template>

@@ -1,0 +1,60 @@
+@layout("/common/_container.html",{js:["/assets/modules/gen/genTableList.js"]}){
+
+<div class="layui-body-header">
+    <span class="layui-body-header-title">代码生成</span>
+</div>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-sm12 layui-col-md12 layui-col-lg12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div class="layui-form toolbar">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <input id="name" class="layui-input" type="text" placeholder="表名"/>
+                            </div>
+                            <div class="layui-inline">
+                                <button id="btnSearch" class="layui-btn layui-btn-primary"><i class="layui-icon">&#xe615;</i>搜索</button>
+                                <button id="btnAdd" class="layui-btn icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>
+                                <button id="btnImport" class="layui-btn icon-btn"><i class="layui-icon">&#xe601;</i>数据库导入</button>
+                                <button id="genCode" class="layui-btn layui-btn-green"><i class="layui-icon">&#xe64e;</i>代码生成</button>
+                                <button id="createMenu" class="layui-btn  layui-btn-primary"><i class="layui-icon ">&#xe656;</i>创建菜单</button>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="layui-table" id="genTable" lay-filter="genTable"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="tableBar">
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>修改</a>
+    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="remove"><i class="layui-icon layui-icon-delete"></i>移除</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete"><i class="layui-icon layui-icon-fire"></i>删除</a>
+    {{# if (d.isSync == '1') { }}
+    <a class="layui-btn layui-btn-normal layui-btn-xs" ><i class="layui-icon layui-icon-ok"></i>已同步</a>
+    {{# } else { }}
+    <a class="layui-btn layui-btn-green layui-btn-xs" lay-event="synchDb"><i class="layui-icon layui-icon-senior"></i>同步库</a>
+    {{# } }}
+</script>
+
+<div id="synchDbDiv" style="display: none;">
+    <form class="layui-form" style="padding:15px 15px 0px 15px;">
+        <input type="hidden" id="tableId">
+        <div class="layui-form-item">
+            <p style="color:red">请慎重选择同步方式,强制同步数据库将删除所有数据重新建表!</p>
+        </div>
+        <div class="layui-form-item" style="text-align: center;margin-bottom: 10px">
+            <input type="radio" name="type" value="0" title="普通同步(保留数据)" checked="">
+            <input type="radio" name="type" value="1" title="强制同步(重新建表)" >
+        </div>
+        <div class="text-right">
+            <div id="synchDbDivCancel" class="layui-btn layui-btn-primary">取消</div>
+            <div id="synchDbDivSure" class="layui-btn">确定</div>
+        </div>
+    </form>
+</div>
+@}

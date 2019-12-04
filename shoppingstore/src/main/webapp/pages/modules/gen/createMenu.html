@@ -1,0 +1,105 @@
+@layout("/common/_container.html",{bg:"bg-white",js:["/assets/modules/gen/createMenu.js"]}){
+<style>
+    #iconSet {
+        display: inline-block;
+        padding: 10px;
+        cursor: pointer;
+        color: #1E9FFF;
+    }
+    #iconSet:hover, #iconSet:active {
+        color: white;
+        background-color: #1E9FFF;
+    }
+    #iconSetContent {
+        display: none;
+        padding: 10px;
+    }
+    #iconSetList {
+        height: 290px;
+        overflow: auto;
+        /*padding-left: 30px;*/
+        white-space: pre-wrap;
+        border: 1px solid gainsboro;
+    }
+    #iconSetList .layui-icon {
+        display: inline-block;
+        padding: 10px;
+        cursor: pointer;
+        margin: 2px 4px;
+    }
+    #iconSetList .active {
+        background-color: #1E9FFF;
+        color: white;
+    }
+    #iconSetList .layui-icon:hover, #iconSetList .layui-icon:active {
+        background-color: #1E9FFF;
+        color: white;
+    }
+</style>
+<div class="layui-container">
+    <form id="genMenu" lay-filter="genCode" class="layui-form">
+        <input type="hidden" class="layui-input" name="genTableId" id="genTableId">
+        <div class="layui-form-item">
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">父级编号<span style="color: red;">*</span></label>
+            <div class="layui-input-block">
+                <input id="parentId" name="parentId" type="hidden" class="layui-input" lay-verify="required" required/>
+                <input id="parentName" name="parentName" placeholder="请选择父级" type="text" class="layui-input" lay-verify="required" autocomplete="off" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">名称<span style="color: red;">*</span></label>
+            <div class="layui-input-block">
+                <input name="name" placeholder="请输入名称" type="text" class="layui-input" lay-verify="required" required/>
+            </div>
+        </div>
+        <div class="layui-form-item" id="menuIcon">
+            <label class="layui-form-label">图标</label>
+            <div class="layui-input-block">
+                <input name="icon" placeholder="请输入图标" type="hidden" class="layui-input" value="layui-icon-set"/>
+                <i id="iconSet" class="layui-icon layui-icon-set"></i>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">&nbsp;</label>
+            <div class="layui-input-block">
+                &nbsp;
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">&nbsp;</label>
+            <div class="layui-input-block">
+                &nbsp;
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">&nbsp;</label>
+            <div class="layui-input-block">
+                &nbsp;
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">&nbsp;</label>
+            <div class="layui-input-block">
+                &nbsp;
+            </div>
+        </div>
+        <div class="layui-form-item text-center">
+            <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+            <button class="layui-btn" lay-filter="btnSubmit" lay-submit="">保存</button>
+        </div>
+    </form>
+</div>
+<div id="iconSetContent">
+    <form class="layui-form">
+        <div class="layui-form-item" id="iconSetList">
+            list
+        </div>
+        <div class="text-right">
+            <div id="iconSetCancel" class="layui-btn layui-btn-primary">取消</div>
+            <div id="iconSetSure" class="layui-btn">保存</div>
+        </div>
+    </form>
+</div>
+@}

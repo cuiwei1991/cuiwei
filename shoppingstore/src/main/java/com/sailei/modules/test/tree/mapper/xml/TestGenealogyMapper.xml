@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sailei.modules.test.tree.mapper.TestGenealogyMapper">
+
+	<!-- 通用结果集 -->
+	<sql id="Base_Column_List">
+		a.id AS id,
+		a.name AS name,
+		a.seniority AS seniority,
+		a.call_name AS callName,
+		a.parent_id AS parentId,
+		a.parent_ids AS parentIds,
+		a.create_date AS createDate,
+		a.update_date AS updateDate,
+		a.del_flag AS delFlag,
+		p.name AS "parentName"
+	</sql>
+
+	<!-- 根据记录ID获取记录 -->
+    <select id="getById" resultType="com.sailei.modules.test.tree.entity.TestGenealogy">
+		SELECT
+			 <include refid="Base_Column_List"/>
+		FROM test_genealogy a
+		LEFT JOIN test_genealogy p ON a.parent_id=p.id
+		WHERE a.del_flag='0' and a.id = #{id}
+	</select>
+
+    <!-- 获取记录列表 -->
+    <select id="queryPage" resultType="com.sailei.modules.test.tree.entity.TestGenealogy">
+        SELECT
+        	<include refid="Base_Column_List"/>
+        FROM test_genealogy a
+        LEFT JOIN test_genealogy p ON a.parent_id=p.id
+		WHERE a.del_flag='0'
+    </select>
+
+    <!-- 查询树 -->
+    <select id="tree" resultType="com.sailei.common.base.ZTreeNode">
+		SELECT
+            id AS id,
+            parent_id AS "pId",
+            name AS NAME,
+            ( CASE WHEN (parent_id = 0 OR parent_id IS NULL) THEN 'true' ELSE 'false' END ) AS "open"
+        FROM test_genealogy WHERE del_flag=0
+	</select>
+
+	<!-- 保存记录 -->
+	<insert id="save">
+		INSERT INTO test_genealogy(
+				name,
+		seniority,
+		call_name,
+		parent_id,
+		parent_ids,
+		create_date,
+		update_date
+		) VALUES (
+				#{name},
+		#{seniority},
+		#{callName},
+		#{parentId},
+		#{parentIds},
+		#{createDate},
+		#{updateDate}
+		)
+	</insert>
+
+	<!-- 根据ID更新记录 -->
+	<update id="updateById">
+		UPDATE test_genealogy SET
+				name = #{name},
+		seniority = #{seniority},
+		call_name = #{callName},
+		parent_id = #{parentId},
+		parent_ids = #{parentIds},
+		update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+
+	<!--根据ID移除记录-->
+	<update id="remove">
+		UPDATE test_genealogy SET del_flag='1' WHERE id = #{id}
+	</update>
+
+	<!-- 根据父ID移除所有子记录 -->
+    <update id="removeRelation">
+        UPDATE test_genealogy SET del_flag=1 WHERE id = #{parentId} or parent_ids like CONCAT('%',#{parentId},'%')
+    </update>
+</mapper>

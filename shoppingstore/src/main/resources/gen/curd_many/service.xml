@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+	<name>service</name>
+	<filePath>src/main/java/${packageName}/${moduleName}/${subModuleName}/service</filePath>
+	<fileName>${ClassName}Service.java</fileName>
+	<content><![CDATA[
+package ${packageName}.${moduleName}<#if subModuleName != "">.${subModuleName}</#if>.service;
+
+import java.util.*;
+import java.math.BigDecimal;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.sailei.common.base.LayuiPage;
+import com.sailei.common.service.R;
+import com.sailei.common.utils.PageUtils;
+import com.sailei.common.utils.IdUtils;
+import com.sailei.common.utils.ToolUtils;
+import ${packageName}.${moduleName}<#if subModuleName != "">.${subModuleName}</#if>.entity.${ClassName};
+import ${packageName}.${moduleName}<#if subModuleName != "">.${subModuleName}</#if>.mapper.${ClassName}Mapper;
+<#list table.childList as c>
+import ${packageName}.${moduleName}<#if subModuleName != "">.${subModuleName}</#if>.entity.${c.className?cap_first};
+import ${packageName}.${moduleName}<#if subModuleName != "">.${subModuleName}</#if>.mapper.${c.className?cap_first}Mapper;
+</#list>
+
+/**
+ * ${table.comments}服务类
+ *
+ * @Author ${functionAuthor}
+ * @Date ${functionDate}
+ */
+@Service
+public class ${ClassName}Service{
+
+	 @Autowired
+     private ${ClassName}Mapper ${className}Mapper;
+     <#list table.childList as c>
+     @Autowired
+     private ${c.className?cap_first}Mapper ${c.className?uncap_first}Mapper;
+     </#list>
+
+	/**
+     * 根据条件查询列表
+     *
+     * @Author ${functionAuthor}
+     * @Date ${functionDate}
+     */
+    public LayuiPage queryPage(Map<String, Object> params) {
+
+        /**处理分页参数*/
+        PageUtils.changeForMap(params);
+        /**获取分页列表*/
+        List<${ClassName}> ${className}s = ${className}Mapper.queryPage(params);
+        /**获取总条数*/
+        long count = ${className}Mapper.queryCount(params);
+        /**初始化LayuiPage*/
+        LayuiPage page = new LayuiPage(${className}s, count);
+
+        return page;
+    }
+
+    /**
+     * 根据ID查询记录
+     *
+     * @param id 记录ID
+     */
+     public R getById(String id) {
+        R result = R.ok();
+        ${ClassName} ${className} = ${className}Mapper.getById(id);
+        <#list table.childList as c>
+        List<${c.className?cap_first}> ${c.className?uncap_first}List = ${c.className?uncap_first}Mapper.getByParentId(id);
+        ${className}.set${c.className?cap_first}List(${c.className?uncap_first}List);
+        </#list>
+        result.put("${className}", ${className});
+        return result;
+    }
+
+    /**
+     * 保存记录
+     *
+     * @param ${className} 保存的对象
+     */
+    @Transactional(rollbackFor = Exception.class)
+	public R saveOrupdate(${ClassName} ${className}) {
+		/** 主表更新 */
+        if(${className}.get${table.pkField?cap_first}() != null && !"".equals(${className}.get${table.pkField?cap_first}())){
+        	<#if table.updateDateExists >
+			${className}.setUpdateDate(new Date());
+			</#if>
+            ${className}Mapper.updateById(${className});
+        }else{
+        	<#if table.genIdType != "1">
+            String id= IdUtils.getNumberId();
+            ${className}.set${table.pkField?cap_first}(id);
+            </#if>
+            <#if table.createDateExists >
+			${className}.setCreateDate(new Date());
+			</#if>
+            ${className}Mapper.save(${className});
+        }
+
+        /** 子表更新 */
+        <#list table.childList as c>
+		/** 如果是修改，先删除原子表内容 */
+        if(${className}.get${table.pkField?cap_first}() != null && !"".equals(${className}.get${table.pkField?cap_first}())){
+        	${c.className?uncap_first}Mapper.removeByParentId(${className}.get${table.pkField?cap_first}());
+        }
+        List<Map<String,Object>> list${c.className?cap_first} = ${className}.get${c.className?cap_first}MapList();
+		if(list${c.className?cap_first} != null && list${c.className?cap_first}.size() > 0){
+			for(Map<String,Object> map : list${c.className?cap_first}){
+				${c.className?cap_first} ${c.className?uncap_first} = new ${c.className?cap_first}();
+				<#if c.genIdType != "1">
+			   	String childId = IdUtils.getNumberId();
+			   	${c.className?uncap_first}.set${c.pkField?cap_first}(childId);
+				</#if>
+			   	${c.className?uncap_first}.set${c.parentTablePk?cap_first}(${className}.get${table.pkField?cap_first}());
+		<#list c.columnList as column>
+			<#if column.isInsert?? && column.isInsert == '1' && column.isPk !='1' && column.name != c.parentTableFk>
+				<#if column.javaType == "String" >
+				String ${column.javaField} = map.get("${column.javaField}") != null ? map.get("${column.javaField}").toString() : "";
+				${c.className?uncap_first}.set${column.javaField?cap_first}(${column.javaField});
+				<#elseif column.javaType == "java.math.BigDecimal">
+				String ${column.javaField} = map.get("${column.javaField}") != null ? map.get("${column.javaField}").toString() : "0";
+				${c.className?uncap_first}.set${column.javaField?cap_first}(new BigDecimal(ToolUtils.isNotEmpty(${column.javaField}) ? ${column.javaField} : "0"));
+				<#elseif column.javaType == "Integer">
+				String ${column.javaField} = map.get("${column.javaField}") != null ? map.get("${column.javaField}").toString() : "0";
+				${c.className?uncap_first}.set${column.javaField?cap_first}(Integer.valueOf(ToolUtils.isNotEmpty(${column.javaField}) ? ${column.javaField} : "0"));
+				<#elseif column.javaType == "java.util.Date">
+				${c.className?uncap_first}.set${column.javaField?cap_first}(new Date());
+				</#if>
+			</#if>
+	   </#list>
+			   ${c.className?uncap_first}Mapper.save(${c.className?uncap_first});
+		   }
+		}
+		</#list>
+
+        return R.ok();
+    }
+
+    /**
+     * 根据ID移除记录
+     *
+     * @param id 记录ID
+     */
+    public R remove(String id) {
+        ${className}Mapper.remove(id);
+
+        <#list table.childList as c>
+        /** 移除子表数据 */
+		${c.className?uncap_first}Mapper.removeByParentId(id);
+
+		</#list>
+        return R.ok();
+    }
+
+}]]>
+	</content>
+</template>

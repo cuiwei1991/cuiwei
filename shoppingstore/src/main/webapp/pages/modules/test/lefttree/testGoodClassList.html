@@ -1,0 +1,69 @@
+@layout("/common/_container.html",{plugins:["ztree"],js:["/assets/modules/test/lefttree/testGoodClassList.js"]}){
+
+<div class="layui-body-header">
+    <span class="layui-body-header-title">商品列表</span>
+</div>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+    	<div class="layui-col-sm12 layui-col-md3 layui-col-lg2">
+            <div class="layui-card">
+                <div class="layui-card-body mini-bar">
+                    <div class="ztree" id="dataTree"></div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-sm12 layui-col-md9 layui-col-lg10">
+            <div class="layui-card">
+                <div class="layui-card-body">
+					<form id="testGoodClassForm" lay-filter="testGoodClassForm" class="layui-form">
+                    <div class="layui-form toolbar">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+							<input name="title" id="titleId" placeholder="请输入商品名称" type="text" class="layui-input" />
+                            </div>
+                        <div class="layui-inline">
+                                <a id="btnSearch" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索</a>
+                                @if(shiro.hasPermission("test:lefttree:testGoodClass:add")){
+                                <a id="btnAddSub" class="layui-btn icon-btn"><i class="layui-icon">&#xe654;</i>添加</a>
+                                @}
+                            </div>
+                        </div>
+                    </div>
+                    </form>
+                    <table class="layui-table" id="dataTable" lay-filter="dataTable"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="rMenu">
+    <ul>
+        <li id="m_add">增加</li>
+        <li id="m_edit">修改</li>
+        <li id="m_remove">删除</li>
+    </ul>
+</div>
+<style type="text/css">
+    div#rMenu {
+        font-size: 12px;position:absolute; visibility:hidden; top:0; background-color: #fff;
+        text-align: left;padding: 2px;box-shadow: 2px 2px 5px #333333;
+    }
+    div#rMenu ul li{
+        margin: 1px 0;
+        padding: 5px 25px;
+        cursor: pointer;
+        list-style: none outside none;
+        /*background-color: #DFDFDF;*/
+        border-bottom: 1px solid #DFDFDF;
+    }
+</style>
+<script type="text/html" id="tableBar">
+@if(shiro.hasPermission("test:lefttree:testGoodClass:edit")){
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="editSub"><i class="layui-icon layui-icon-edit"></i>修改</a>
+@}
+@if(shiro.hasPermission("test:lefttree:testGoodClass:remove")){
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="removeSub"><i class="layui-icon layui-icon-delete"></i>删除</a>
+@}
+</script>
+@}

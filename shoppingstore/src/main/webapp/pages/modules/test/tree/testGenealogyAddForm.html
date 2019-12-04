@@ -1,0 +1,48 @@
+@layout("/common/_container.html",{bg:"bg-white",js:["/assets/modules/test/tree/testGenealogyAddForm.js"]}){
+<form id="testGenealogyForm" lay-filter="testGenealogyForm" class="layui-form model-form">
+		<br>
+		<br>
+    <input name="id" type="hidden"/>
+    <div class="layui-form-item">
+        <label class="layui-form-label">父节点<span style="color: red;">*</span></label>
+        <div class="layui-input-block">
+            <input id="parentId" name="parentId" type="hidden" value="${testGenealogy.id!}">
+            <input id="parentName" name="parentName" value="${testGenealogy.name!}" placeholder="请选择父节点" type="text" class="layui-input" lay-verify="required" required autocomplete="off"/>
+        </div>
+    </div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">姓名:
+			<span style="color: red;">*</span>
+		</label>
+		<div class="layui-input-block">
+			<input name="name" id="nameId" placeholder="请输入姓名" type="text" class="layui-input" required/>
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">辈分:
+			<span style="color: red;">*</span>
+		</label>
+		<div class="layui-input-block">
+			<input name="seniority" id="seniorityId" placeholder="请输入辈分" type="text" class="layui-input" required/>
+		</div>
+	</div>
+	<div class="layui-form-item">
+		<label class="layui-form-label">称呼:
+			<span style="color: red;">*</span>
+		</label>
+		<div class="layui-input-block">
+			<input name="callName" id="callNameId" placeholder="请输入称呼" type="text" class="layui-input" required/>
+		</div>
+	</div>
+    	<br>
+		<br>
+		<br>
+		<br>
+    <div class="layui-form-item text-right">
+        <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+        <button class="layui-btn" lay-filter="btnSubmit" lay-submit>保存</button>
+    </div>
+</form>
+<script>
+</script>
+@}

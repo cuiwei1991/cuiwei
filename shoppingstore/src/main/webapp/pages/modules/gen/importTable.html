@@ -1,0 +1,28 @@
+@layout("/common/_container.html",{bg:"bg-white",js:["/assets/modules/gen/importTable.js"]}){
+<div class="layui-container">
+    <form id="importTable" lay-filter="importTable" class="layui-form">
+        <br/>
+        <br/>
+        <div class="layui-form-item layui-row">
+            <div class="layui-col-md12">
+                <label class="layui-form-label">表名:</label>
+                <div class="layui-input-block">
+                    <select name="tableName" id="tableName" lay-search="">
+                        <option value="">请选择</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <div class="layui-form-item text-right">
+            <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+            <button class="layui-btn" lay-filter="btnSubmit" lay-submit="">导入</button>
+        </div>
+    </form>
+</div>
+@}

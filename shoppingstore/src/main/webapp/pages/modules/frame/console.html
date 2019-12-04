@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>${systemName}</title>
+    <link rel="stylesheet" href="${ctxPath}/assets/common/layui/css/layui.css"/>
+    <link rel="stylesheet" href="${ctxPath}/assets/common/module/admin.css?v=311"/>
+    <link rel="stylesheet" href="${ctxPath}/assets/expand/css/style.css" media="all"/>
+
+    <style>
+        /** 卡片轮播图样式 */
+        .admin-carousel .layui-carousel-ind {
+            position: absolute;
+            top: -41px;
+            text-align: right;
+        }
+
+        .admin-carousel .layui-carousel-ind ul {
+            background: 0 0;
+        }
+
+        .admin-carousel .layui-carousel-ind li {
+            background-color: #e2e2e2;
+        }
+
+        .admin-carousel .layui-carousel-ind li.layui-this {
+            background-color: #999;
+        }
+
+        /** 广告位轮播图 */
+        .admin-news .layui-carousel-ind {
+            height: 45px;
+        }
+
+        .admin-news a {
+            display: block;
+            line-height: 60px;
+            text-align: center;
+        }
+        .layuiadmin-card-status dd{
+            padding: 10px 0;
+            border-bottom: 1px solid #EEE;
+            /*display: -webkit-flex;*/
+            display: flex;
+        }
+        .layuiadmin-card-status dd div.layui-status-img a{
+            width: 100%;
+            height: 100%;
+            display: inline-block;
+            text-align: center;
+            line-height: 32px;
+        }
+        .layuiadmin-card-status dd div a {
+            color: #01AAED;
+        }
+        .layuiadmin-card-status dd div.layui-status-img, .layuiadmin-card-team .layui-team-img{
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #009688;
+            margin-right: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- 加载动画，移除位置在common.js中 -->
+<div class="page-loading">
+    <div class="ball-loader">
+        <span></span><span></span><span></span><span></span>
+    </div>
+</div>
+
+<!-- 正文开始 -->
+<!--<div class="layui-fluid">-->
+    <!--<div class="layui-row layui-col-space15">-->
+        <!--<div class="layui-col-xs12 layui-col-sm6 layui-col-md3">-->
+            <!--<div class="layui-card">-->
+                <!--<div class="layui-card-header">-->
+                    <!--访问量<span class="layui-badge layui-bg-blue pull-right">月</span>-->
+                <!--</div>-->
+                <!--<div class="layui-card-body">-->
+                    <!--<p class="lay-big-font">12,500</p>-->
+                    <!--<p>总计访问量<span class="pull-right">32万+ <i class="layui-icon layui-icon-flag"></i></span></p>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div class="layui-col-xs12 layui-col-sm6 layui-col-md3">-->
+            <!--<div class="layui-card">-->
+                <!--<div class="layui-card-header">-->
+                    <!--下载量<span class="layui-badge layui-bg-cyan pull-right">月</span>-->
+                <!--</div>-->
+                <!--<div class="layui-card-body">-->
+                    <!--<p class="lay-big-font">2,400</p>-->
+                    <!--<p>总下载<span class="pull-right">5万+ <i class="layui-icon layui-icon-note"></i></span></p>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div class="layui-col-xs12 layui-col-sm6 layui-col-md3">-->
+            <!--<div class="layui-card">-->
+                <!--<div class="layui-card-header">-->
+                    <!--GIT PULL<span class="layui-badge layui-bg-green pull-right">月</span>-->
+                <!--</div>-->
+                <!--<div class="layui-card-body">-->
+                    <!--<p class="lay-big-font">1,500</p>-->
+                    <!--<p>总PULL数<span class="pull-right">5万+ <i class="layui-icon layui-icon-notice"></i></span></p>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div class="layui-col-xs12 layui-col-sm6 layui-col-md3">-->
+            <!--<div class="layui-card">-->
+                <!--<div class="layui-card-header">-->
+                    <!--GIT PUSH<span class="layui-badge layui-bg-orange pull-right">月</span>-->
+                <!--</div>-->
+                <!--<div class="layui-card-body">-->
+                    <!--<p class="lay-big-font">100</p>-->
+                    <!--<p>总PUSH数<span class="pull-right">1066 <i class="layui-icon layui-icon-diamond"></i></span></p>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-sm6 layui-col-xs12 layui-col-md6">
+            <div class="layui-card">
+                <div class="layui-card-header">快捷方式</div>
+                <div class="layui-card-body">
+                    <div class="layadmin-shortcut">
+                        <div carousel-item>
+                            <ul class="layui-row layui-col-space10">
+                                <li class="layui-col-xs3">
+                                    <a href="javascript:;" id="a-url">
+                                        <i class="layui-icon layui-icon-add-1" id="i-class"></i>
+                                    </a>
+                                    <span id="span-html" onclick="setLnk('1')">设置快捷方式</span>
+                                </li>
+                                <li class="layui-col-xs3">
+                                    <a href="javascript:;" id="a-url2">
+                                        <i class="layui-icon layui-icon-add-1" id="i-class2"></i>
+                                    </a>
+                                    <span id="span-html2" onclick="setLnk('2')">设置快捷方式</span>
+                                </li>
+                                <li class="layui-col-xs3">
+                                    <a href="javascript:;" id="a-url3">
+                                        <i class="layui-icon layui-icon-add-1" id="i-class3"></i>
+                                    </a>
+                                    <span id="span-html3" onclick="setLnk('3')">设置快捷方式</span>
+                                </li>
+                                <li class="layui-col-xs3">
+                                    <a href="javascript:;" id="a-url4">
+                                        <i class="layui-icon layui-icon-add-1" id="i-class4"></i>
+                                    </a>
+                                    <span id="span-html4" onclick="setLnk('4')">设置快捷方式</span>
+                                </li>
+                                <li class="layui-col-xs3">
+                                    <a href="javascript:;" id="a-url5">
+                                        <i class="layui-icon layui-icon-add-1" id="i-class5"></i>
+                                    </a>
+                                    <span id="span-html5" onclick="setLnk('5')">设置快捷方式</span>
+                                </li>
+                                <li class="layui-col-xs3">
+                                    <a href="javascript:;" id="a-url6">
+                                        <i class="layui-icon layui-icon-add-1" id="i-class6"></i>
+                                    </a>
+                                    <span id="span-html6" onclick="setLnk('6')">设置快捷方式</span>
+                                </li>
+                                <li class="layui-col-xs3">
+                                    <a href="javascript:;" id="a-url7">
+                                        <i class="layui-icon layui-icon-add-1" id="i-class7"></i>
+                                    </a>
+                                    <span id="span-html7" onclick="setLnk('7')">设置快捷方式</span>
+                                </li>
+                                <li class="layui-col-xs3">
+                                    <a href="javascript:;" id="a-url8">
+                                        <i class="layui-icon layui-icon-add-1" id="i-class8"></i>
+                                    </a>
+                                    <span id="span-html8" onclick="setLnk('8')">设置快捷方式</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-sm6 layui-col-xs12 layui-col-md6 ">
+            <div class="layui-card">
+                <div class="layui-card-header">待办事项</div>
+                <div class="layui-card-body">
+                    <div class="layadmin-backlog">
+                        <div carousel-item>
+                            <ul class="layui-row layui-col-space10">
+                                <li class="layui-col-xs4">
+                                    <a href="javascript:;" class="layadmin-backlog-body">
+                                        <h3>待审评论</h3>
+                                        <p><cite>66</cite></p>
+                                    </a>
+                                </li>
+                                <li class="layui-col-xs4">
+                                    <a href="javascript:;" class="layadmin-backlog-body">
+                                        <h3>待审帖子</h3>
+                                        <p><cite>12</cite></p>
+                                    </a>
+                                </li>
+                                <li class="layui-col-xs4">
+                                    <a href="javascript:;" class="layadmin-backlog-body">
+                                        <h3>待审商品</h3>
+                                        <p><cite>99</cite></p>
+                                    </a>
+                                </li>
+                                <li class="layui-col-xs4">
+                                    <a href="javascript:;" onclick="layer.tips('不跳转', this, {tips: 3});" class="layadmin-backlog-body">
+                                        <h3>待发货</h3>
+                                        <p><cite>20</cite></p>
+                                    </a>
+                                </li>
+                                <li class="layui-col-xs4">
+                                    <a href="javascript:;" class="layadmin-backlog-body">
+                                        <h3>待审商品</h3>
+                                        <p><cite>99</cite></p>
+                                    </a>
+                                </li>
+                                <li class="layui-col-xs4">
+                                    <a href="" onclick="layer.tips('不跳转', this, {tips: 3});" class="layadmin-backlog-body">
+                                        <h3>待发货</h3>
+                                        <p><cite>20</cite></p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-sm6 layui-col-xs12 layui-col-md6">
+            <div class="layui-card">
+                <div class="layui-card-header">数据概览</div>
+                <div class="layui-card-body">
+                    <div id="main" style="width: 100%;height: 360px;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-sm6 layui-col-xs12 layui-col-md6">
+            <div class="layui-card">
+                <div class="layui-card-header">动态</div>
+                <div class="layui-card-body">
+                    <div style="min-height: 360px; max-height: 360px;overflow-y:auto;">
+                        <dl class="layuiadmin-card-status">
+
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- js部分 -->
+@/* 加入contextPath属性和session超时的配置 */
+<script type="text/javascript">
+    var Feng = {
+        ctxPath: "",
+        addCtx: function (ctx) {
+            if (this.ctxPath === "") {
+                this.ctxPath = ctx;
+            }
+        }
+    };
+    Feng.addCtx("${ctxPath}");
+</script>
+
+<script type="text/javascript" src="${ctxPath}/assets/common/layui/layui.js"></script>
+<script type="text/javascript" src="${ctxPath}/assets/common/js/common.js?v=311"></script>
+<script type="text/javascript" src="${ctxPath}/assets/common/js/echart.js"></script>
+
+<script>
+    layui.use(['layer', 'carousel', 'ax'], function () {
+        var $ = layui.jquery;
+        var $ax = layui.ax;
+        var layer = layui.layer;
+        var carousel = layui.carousel;
+        var device = layui.device;
+
+        // 渲染轮播
+        carousel.render({
+            elem: '.layui-carousel',
+            width: '100%',
+            height: '60px',
+            arrow: 'none',
+            autoplay: true,
+            trigger: device.ios || device.android ? 'click' : 'hover',
+            anim: 'fade'
+        });
+
+        /**
+         * 设置快捷方式
+         */
+        window.setLnk = function(iconId) {
+            layer.open({
+                type: 2,
+                title: '设置快捷方式',
+                area: ['300px', '450px'],
+                fix: false,
+                maxmin: true,
+                content: Feng.ctxPath + '/system/menu_list?iconId=' + iconId,
+                end: function () {
+                    ajax.start();
+                }
+            });
+        }
+        var ajax = new $ax(Feng.ctxPath + "/system/lnk", function (res) {
+            for (var i = 0; res.data != '' && res.data != undefined && i < res.data.length; i++) {
+                if (res.data.length === 0) {
+                    $("#span-html").html('设置快捷方式');
+                    $("#span-html2").html('设置快捷方式');
+                    $("#span-html3").html('设置快捷方式');
+                    $("#span-html4").html('设置快捷方式');
+                    $("#span-html5").html('设置快捷方式');
+                    $("#span-html6").html('设置快捷方式');
+                    $("#span-html7").html('设置快捷方式');
+                    $("#span-html8").html('设置快捷方式');
+                } else {
+                    if (res.data[i].menuId === '1') {
+                        $("#span-html").html(res.data[i].name);
+                        var aObj = document.getElementById("a-url");
+                        aObj.href = '${ctxPath}' + res.data[i].url
+                        document.getElementById("i-class").className = document.getElementById("i-class").className.replace(/(?:^|\s)layui-icon-add-1(?!\S)/g, '')
+                        document.getElementById("i-class").className += " " + res.data[i].icon
+                    }
+                    if (res.data[i].menuId === '2') {
+                        $("#span-html2").html(res.data[i].name);
+                        var aObj1 = document.getElementById("a-url2");
+                        aObj1.href = '${ctxPath}' + res.data[i].url
+                        document.getElementById("i-class2").className = document.getElementById("i-class2").className.replace(/(?:^|\s)layui-icon-add-1(?!\S)/g, '')
+                        document.getElementById("i-class2").className += " " + res.data[i].icon
+                    }
+                    if (res.data[i].menuId === '3') {
+                        $("#span-html3").html(res.data[i].name);
+                        var aObj2 = document.getElementById("a-url3");
+                        aObj2.href = '${ctxPath}' + res.data[i].url
+                        document.getElementById("i-class3").className = document.getElementById("i-class3").className.replace(/(?:^|\s)layui-icon-add-1(?!\S)/g, '')
+                        document.getElementById("i-class3").className += " " + res.data[i].icon
+                    }
+                    if (res.data[i].menuId === '4') {
+                        $("#span-html4").html(res.data[i].name);
+                        var aObj3 = document.getElementById("a-url4");
+                        aObj3.href = '${ctxPath}' + res.data[i].url
+                        document.getElementById("i-class4").className = document.getElementById("i-class4").className.replace(/(?:^|\s)layui-icon-add-1(?!\S)/g, '')
+                        document.getElementById("i-class4").className += " " + res.data[i].icon
+                    }
+                    if (res.data[i].menuId === '5') {
+                        $("#span-html5").html(res.data[i].name);
+                        var aObj4 = document.getElementById("a-url5");
+                        aObj4.href = '${ctxPath}' + res.data[i].url
+                        document.getElementById("i-class5").className = document.getElementById("i-class5").className.replace(/(?:^|\s)layui-icon-add-1(?!\S)/g, '')
+                        document.getElementById("i-class5").className += " " + res.data[i].icon
+                    }
+                    if (res.data[i].menuId === '6') {
+                        $("#span-html6").html(res.data[i].name);
+                        var aObj5 = document.getElementById("a-url6");
+                        aObj5.href = '${ctxPath}' + res.data[i].url
+                        document.getElementById("i-class6").className = document.getElementById("i-class6").className.replace(/(?:^|\s)layui-icon-add-1(?!\S)/g, '')
+                        document.getElementById("i-class6").className += " " + res.data[i].icon
+                    }
+                    if (res.data[i].menuId === '7') {
+                        $("#span-html7").html(res.data[i].name);
+                        var aObj6 = document.getElementById("a-url7");
+                        aObj6.href = '${ctxPath}' + res.data[i].url
+                        document.getElementById("i-class7").className = document.getElementById("i-class7").className.replace(/(?:^|\s)layui-icon-add-1(?!\S)/g, '')
+                        document.getElementById("i-class7").className += " " + res.data[i].icon
+                    }
+                    if (res.data[i].menuId === '8') {
+                        $("#span-html8").html(res.data[i].name);
+                        var aObj8 = document.getElementById("a-url8");
+                        aObj8.href = '${ctxPath}' + res.data[i].url
+                        document.getElementById("i-class8").className = document.getElementById("i-class8").className.replace(/(?:^|\s)layui-icon-add-1(?!\S)/g, '')
+                        document.getElementById("i-class8").className += " " + res.data[i].icon
+                    }
+                }
+            }
+        }, function (data) {
+        });
+        ajax.start();
+
+        // 图表的配置项和数据
+        var myChart = echarts.init(document.getElementById('main'));
+        option = {
+            title: {
+                text: ''
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data:['访问量','下载量','GIT PULL','GIT PUSH'],
+                right: 10,
+                top: 0,
+                bottom: 0
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                splitLine: {
+                    show: false
+                },
+                axisLine: {
+                    lineStyle: {
+                        type: 'solid',
+                        color:'#2F4056'
+                    }
+                },
+                axisLabel: {
+                    textStyle: {
+                        color: '#2F4056',
+                    }
+                },
+                data: ["1月","2月","3月","4月","5月","6月","7月","8月"]
+//                data: ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"]
+            },
+            yAxis: {
+                type: 'value',
+                splitLine: {
+                    show: false
+                },
+                splitArea: {
+                    show: true,
+                    areaStyle: {
+                        color: ['rgba(250,250,250,0.3)','#f4f4f4']
+                    }
+                },
+                axisLabel: {
+                    textStyle: {
+                        color: '#2F4056',
+                    }
+                },
+                axisLine: {
+                    lineStyle: {
+                        type: 'solid',
+                        color:'#2F4056'
+                    }
+                }
+            },
+            series: [
+                {
+                    name:'访问量',
+                    type:'line',
+                    stack: null,
+                    itemStyle : {
+                        normal : {
+                            color:'#FF6384',
+                            lineStyle:{
+                                color:'#FF6384'
+                            }
+                        }
+                    },
+                    data:[120, 132, 101, 134, 90, 230, 210, 210]
+                },
+                {
+                    name:'下载量',
+                    type:'line',
+                    stack: null,
+                    itemStyle : {
+                        normal : {
+                            color:'#60C0DD', //改变折线点的颜色
+                            lineStyle:{
+                                color:'#60C0DD' //改变折线颜色
+                            }
+                        }
+                    },
+                    data:[220, 182, 191, 234, 290, 350, 310, 310]
+                },
+                {
+                    name:'GIT PULL',
+                    type:'line',
+                    stack: null,
+                    itemStyle : {
+                        normal : {
+                            color:'#F4E001',
+                            lineStyle:{
+                                color:'#F4E001'
+                            }
+                        }
+                    },
+                    data:[150, 232, 201, 154, 190, 280, 410, 410]
+                },
+                {
+                    name:'GIT PUSH',
+                    type:'line',
+                    stack: null,
+                    itemStyle : {
+                        normal : {
+                            color:'#32cd32', //改变折线点的颜色
+                            lineStyle:{
+                                color:'#32cd32' //改变折线颜色
+                            }
+                        }
+                    },
+                    data:[320, 332, 301, 334, 390, 330, 320, 320]
+                }
+            ]
+        };
+        myChart.setOption(option);
+        // 图表自适应
+        setTimeout(function (){
+            window.onresize = function () {
+                myChart.resize();
+            }
+        },200)
+
+        // 动态列表
+        var ajax2 = new $ax(Feng.ctxPath + "/log/listForHome", function (res) {
+            for (var i = 0; res.data != '' && res.data != undefined && i < res.data.length; i++) {
+                var logArr = res.data
+                var logArr2 = logArr.slice(0,10);
+                $(".layuiadmin-card-status").append("<dd>" +
+                    "<div class='layui-status-img'>" +
+                    "<a href='javascript:;'>" + "<img src='${ctxPath}/assets/common/images/tx.png'>" + "</a>" +
+                    "</div>" +
+                    "<div>" + "<p>" + logArr2[i].userName + " 操作了 " + "<a>" + logArr2[i].logName +"</a>" +"</p>" +
+                    "<span>" + logArr2[i].createTime + "</span>" +
+                    "</div>" +
+                    "</dd>")
+            }
+        }, function (data) {
+        });
+        ajax2.start();
+    });
+</script>
+</body>
+
+</html>

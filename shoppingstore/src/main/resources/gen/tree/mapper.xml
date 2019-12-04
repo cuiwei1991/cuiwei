@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+	<name>dao</name>
+	<filePath>src/main/java/${packageName}/${moduleName}/${subModuleName}/mapper</filePath>
+	<fileName>${ClassName}Mapper.java</fileName>
+	<content><![CDATA[
+package ${packageName}.${moduleName}<#if subModuleName != "">.${subModuleName}</#if>.mapper;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import java.util.Map;
+import java.util.List;
+import com.sailei.common.base.ZTreeNode;
+import ${packageName}.${moduleName}<#if subModuleName != "">.${subModuleName}</#if>.entity.${ClassName};
+
+/**
+ * ${table.comments}Mapper接口
+ *
+ * @Author ${functionAuthor}
+ * @Date ${functionDate}
+ */
+@Mapper
+public interface ${ClassName}Mapper {
+
+	/**
+     * 根据ID查询记录
+     */
+	${ClassName} getById(@Param("id") String id);
+
+	/**
+     * 根据条件查询列表
+     */
+    List<${ClassName}> queryPage();
+
+    /**
+     * 获取树结构
+     */
+    List<ZTreeNode> tree();
+
+	/**
+     * 保存记录
+     */
+    void save(${ClassName} ${className});
+
+	/**
+     * 根据ID更新记录
+     */
+    void updateById(${ClassName} ${className});
+
+	/**
+     * 根据ID移除记录
+     */
+    void remove(@Param("id") String id);
+
+	/**
+     * 根据父ID移除所有子记录
+     */
+    void removeRelation(@Param("parentId") String parentId);
+
+}]]>
+	</content>
+</template>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+    <name>service</name>
+    <filePath>src/main/java/${packageName}/${moduleName}/${subModuleName}/service</filePath>
+    <fileName>${ClassName}Service.java</fileName>
+    <content><![CDATA[
+package ${packageName}.${moduleName}<#if subModuleName != "">.${subModuleName}</#if>.service;
+
+import java.util.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.sailei.common.base.LayuiPage;
+import com.sailei.common.service.R;
+import com.sailei.common.utils.IdUtils;
+import com.sailei.common.utils.PageUtils;
+import ${packageName}.${moduleName}<#if subModuleName != "">.${subModuleName}</#if>.entity.${ClassName};
+import ${packageName}.${moduleName}<#if subModuleName != "">.${subModuleName}</#if>.mapper.${ClassName}Mapper;
+
+/**
+ * ${table.comments}服务类
+ *
+ * @Author ${functionAuthor}
+ * @date ${functionDate}
+ */
+@Service
+public class ${ClassName}Service{
+
+	 @Autowired
+     private ${ClassName}Mapper ${className}Mapper;
+
+	/**
+     * 根据条件查询列表
+     *
+     * @Author ${functionAuthor}
+     * @date ${functionDate}
+     */
+    public LayuiPage queryPage(Map<String, Object> params) {
+
+        /**处理分页参数*/
+        PageUtils.changeForMap(params);
+        /**获取分页列表*/
+        List<${ClassName}> ${className}s = ${className}Mapper.queryPage(params);
+        /**获取总条数*/
+        long count = ${className}Mapper.queryCount(params);
+        /**初始化LayuiPage*/
+        LayuiPage page = new LayuiPage(${className}s, count);
+
+        return page;
+    }
+
+    /**
+     * 根据ID查询记录
+     *
+     * @param id 记录ID
+     */
+     public R getById(String id) {
+        ${ClassName} ${className} = ${className}Mapper.getById(id);
+        return R.ok().put("data", ${className});
+    }
+
+    /**
+     * 保存记录
+     *
+     * @param ${className} 保存的对象
+     */
+    public R saveOrupdate(${ClassName} ${className}) {
+
+        if(${className}.get${table.pkField?cap_first}() != null && !"".equals(${className}.get${table.pkField?cap_first}())){
+            <#if table.updateDateExists >
+			${className}.setUpdateDate(new Date());
+			</#if>
+            ${className}Mapper.updateById(${className});
+        }else{
+            <#if table.genIdType != "1">
+            String id= IdUtils.getNumberId();
+            ${className}.set${table.pkField?cap_first}(id);
+            </#if>
+            <#if table.createDateExists >
+			${className}.setCreateDate(new Date());
+			</#if>
+            ${className}Mapper.save(${className});
+        }
+        return R.ok();
+    }
+
+    /**
+     * 根据ID移除记录
+     *
+     * @param id 记录ID
+     */
+    public R remove(String id) {
+        ${className}Mapper.remove(id);
+        return R.ok();
+    }
+
+}]]>
+    </content>
+</template>

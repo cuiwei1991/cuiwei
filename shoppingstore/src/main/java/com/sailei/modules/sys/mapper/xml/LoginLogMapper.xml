@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sailei.modules.sys.mapper.LoginLogMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.login_log_id AS "loginLogId",
+        a.log_name AS "logName",
+        u.name AS "userName",
+        a.user_id AS "userId",
+        a.create_time AS "createTime",
+        a.succeed AS "succeed",
+        a.message AS "message",
+        a.ip_address AS "ipAddress"
+    </sql>
+
+    <!-- 根据条件获取记录列表 -->
+    <select id="queryPage" resultType="com.sailei.modules.sys.entity.LoginLog">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM sys_login_log a
+        LEFT JOIN sys_user u ON a.user_id=u.user_id
+        WHERE a.del_flag=0
+        <if test="beginTime != null and beginTime !='' and endTime != null and endTime != ''">
+            AND (a.create_time BETWEEN CONCAT(#{beginTime},' 00:00:00') AND CONCAT(#{endTime},' 23:59:59'))
+        </if>
+        <if test="logName != null and logName !=''">
+            AND a.log_name LIKE CONCAT('%',#{logName},'%')
+        </if>
+        <choose>
+            <when test="orderBy != null and orderBy != ''">
+                ORDER BY ${orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.create_time DESC
+            </otherwise>
+        </choose>
+        <if test="page !=null and page != -1 and limit != null and limit != ''">
+            limit ${page},${limit}
+        </if>
+    </select>
+
+    <!-- 根据条件获取记录列表条数 -->
+    <select id="queryCount" resultType="java.lang.Long">
+        SELECT
+          COUNT(1)
+        FROM sys_login_log a
+        LEFT JOIN sys_user u ON a.user_id=u.user_id
+        WHERE a.del_flag=0
+        <if test="beginTime != null and beginTime !='' and endTime != null and endTime != ''">
+            AND (a.create_time BETWEEN CONCAT(#{beginTime},' 00:00:00') AND CONCAT(#{endTime},' 23:59:59'))
+        </if>
+        <if test="logName != null and logName !=''">
+            AND a.log_name LIKE CONCAT('%',#{logName},'%')
+        </if>
+    </select>
+    <update id="removeAll">
+        UPDATE sys_login_log SET del_flag=1
+    </update>
+    <insert id="insert">
+        INSERT INTO sys_login_log(
+            login_log_id,
+            log_name,
+            user_id,
+            create_time,
+            succeed,
+            message,
+            ip_address
+        ) VALUES (
+            REPLACE(UUID(),'-',''),
+            #{logName},
+            #{userId},
+            #{createTime},
+            #{succeed},
+            #{message},
+            #{ipAddress}
+        )
+    </insert>
+
+</mapper>

@@ -1,0 +1,61 @@
+@layout("/common/_container.html",{js:["/assets/modules/sys/set/set.js"]}){
+
+<div class="layui-body-header">
+    <span class="layui-body-header-title">配置管理</span>
+</div>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-sm12 layui-col-md12 layui-col-lg12">
+            <div class="layui-card">
+                <div class="layui-card-body">
+                    <div class="layui-form toolbar">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <input id="title" class="layui-input" type="text" placeholder="标题"/>
+                            </div>
+                            <div class="layui-inline">
+                                <button id="btnSearch" class="layui-btn icon-btn"><i class="layui-icon">&#xe615;</i>搜索</button>
+                                @if(shiro.hasPermission("set:add")){
+                                    <button id="btnAdd" class="layui-btn icon-btn"><i class="layui-icon">&#xe654;</i>添加</button>
+                                @}
+                                <button id="clearAll" class="layui-btn layui-btn-danger"><i class="layui-icon">&#xe756;</i>所有缓存</button>
+                                <button id="clearUser" class="layui-btn layui-bg-orange"><i class="layui-icon">&#xe640;</i>用户缓存</button>
+                                <button id="clearMenu" class="layui-btn layui-bg-orange"><i class="layui-icon">&#xe640;</i>菜单缓存</button>
+                                <button id="clearRole" class="layui-btn layui-bg-orange"><i class="layui-icon">&#xe640;</i>角色缓存</button>
+                                <button id="clearSet" class="layui-btn layui-bg-orange"><i class="layui-icon">&#xe640;</i>配置缓存</button>
+                                <button id="clearDict" class="layui-btn layui-bg-orange"><i class="layui-icon">&#xe640;</i>字典缓存</button>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="layui-table" id="setTable" lay-filter="setTable"></table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 操作栏按钮 -->
+<script type="text/html" id="tableBar">
+    @if(shiro.hasPermission("set:update")){
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="update"><i class="layui-icon layui-icon-edit"></i>更新</a>
+    @}
+    @if(shiro.hasPermission("set:lock")){
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="lock"><i class="layui-icon layui-icon-password"></i>加/解锁</a>
+    @}
+    @if(shiro.hasPermission("set:edit")){
+        <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i class="layui-icon layui-icon-edit"></i>修改</a>
+    @}
+    @if(shiro.hasPermission("set:remove")){
+        <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="delete"><i class="layui-icon layui-icon-delete"></i>删除</a>
+    @}
+</script>
+
+<!-- 列表操作 -->
+<script type="text/html" id="setValueTemp" desc="更新数值" >
+    <input type="text" id="{{d.setId}}_setValue" name="setValue" value="{{d.setValue}}" class="layui-input searchVal" lay-filter="setValue" style="height: 28px;padding: 10px;">
+</script>
+<script type="text/html" id="setRemarkTemp" desc="更新描述" >
+    <input type="text" id="{{d.setId}}_remark" name="remark" value="{{d.remark}}" class="layui-input searchVal" lay-filter="remark" style="height: 28px;padding: 10px;">
+</script>
+@}

@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sailei.modules.gen.mapper.GenTableMapper">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id,
+        a.name,
+        a.pk,
+        a.comments,
+        a.class_name as className,
+        a.parent_table as parentTable,
+        a.parent_table_fk	 as parentTableFk,
+        a.create_by as createBy,
+        a.create_date	as createDate,
+        a.update_by as updateBy,
+        a.update_date as updateDate,
+        a.remarks	as remarks,
+        a.del_flag as delFlag,
+        a.issync as issync,
+        a.sync_sql as syncSql,
+        a.gen_id_type as genIdType,
+        a.table_type as tableType
+    </sql>
+
+    <!-- 根据记录ID获取记录 -->
+    <select id="getById" resultType="com.sailei.modules.gen.entity.GenTable">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM gen_table a WHERE a.id=#{id}
+    </select>
+
+    <!-- 根据条件获取记录列表 -->
+    <select id="queryPage" resultType="com.sailei.modules.gen.entity.GenTable">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM gen_table a
+        <if test="name != null">
+            WHERE a.name LIKE CONCAT('%',#{name},'%')
+        </if>
+        ORDER BY a.update_date DESC
+    </select>
+
+    <!-- 根据条件获取记录列表条数 -->
+    <select id="queryCount" resultType="java.lang.Long">
+        SELECT
+        COUNT(1)
+        FROM gen_table a
+        <if test="name != null">
+            WHERE a.name LIKE CONCAT('%',#{name},'%')
+        </if>
+    </select>
+
+    <!-- 查询数据库中可导入的表 -->
+    <select id="findTableListFormDb" resultType="com.sailei.modules.gen.entity.GenTable">
+        SELECT
+            t.table_name AS NAME,
+            t.TABLE_COMMENT AS comments
+        FROM information_schema.`TABLES` t
+        LEFT JOIN gen_table g ON g.NAME = t.table_name
+        WHERE t.TABLE_SCHEMA = ( SELECT DATABASE ( ) ) AND g.NAME IS NULL
+        ORDER BY t.TABLE_NAME
+    </select>
+    <!-- 根据表名查询所有字段列表 -->
+    <select id="getGenTableColumn" resultType="com.sailei.modules.gen.entity.GenTableColumn">
+        SELECT
+            t.COLUMN_NAME AS NAME,
+            ( CASE WHEN t.IS_NULLABLE = 'YES' THEN '1' ELSE '0' END ) AS isNull,
+            t.ORDINAL_POSITION AS sort,
+            t.COLUMN_COMMENT AS comments,
+            t.COLUMN_TYPE AS jdbcType,
+            ( CASE WHEN t.COLUMN_KEY = 'PRI' THEN '1' ELSE '0' END ) AS isPk,
+            ( CASE WHEN t.EXTRA = 'auto_increment' THEN '1' ELSE '0' END ) AS autoIncrement
+        FROM information_schema.`COLUMNS` t
+        WHERE t.TABLE_SCHEMA = ( SELECT DATABASE ( ) ) AND t.TABLE_NAME = upper(#{tableName})
+        ORDER BY t.ORDINAL_POSITION
+    </select>
+
+    <insert id="insert">
+        INSERT INTO gen_table(
+        id,
+        name,
+        pk,
+        comments,
+        table_type,
+        class_name,
+        parent_table,
+        parent_table_fk,
+        create_by,
+        create_date,
+        update_by,
+        update_date,
+        gen_id_type,
+        remarks,
+        issync
+        ) VALUES (
+        #{id,jdbcType=VARCHAR},
+        #{name},
+        #{pk},
+        #{comments},
+        #{tableType},
+        #{className},
+        #{parentTable},
+        #{parentTableFk},
+        #{createBy},
+        #{createDate},
+        #{updateBy},
+        #{updateDate},
+        #{genIdType},
+        #{remarks},
+        #{isSync}
+        )
+    </insert>
+
+    <update id="update">
+        UPDATE gen_table SET
+        pk= #{pk},
+        name= #{name},
+        comments = #{comments},
+        table_type = #{tableType},
+        class_name = #{className},
+        parent_table = #{parentTable},
+        parent_table_fk = #{parentTableFk},
+        update_by = #{updateBy},
+        update_date = #{updateDate},
+        gen_id_type = #{genIdType},
+        sync_sql = #{syncSql},
+        remarks = #{remarks}
+        <if test="isSync != null and isSync != '' or isSync == 0">
+            ,issync = #{isSync}
+        </if>
+        WHERE id = #{id}
+    </update>
+
+    <select id="findList" resultType="com.sailei.modules.gen.entity.GenTable">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM gen_table a
+        WHERE a.del_flag ='0'
+        <if test="name != null and name != ''">
+            AND a.name = #{name}
+        </if>
+        <if test="nameLike != null and nameLike != ''">
+            AND a.name LIKE concat('%',#{nameLike},'%')
+        </if>
+        <if test="comments != null and comments != ''">
+            AND a.comments LIKE concat('%',#{comments},'%')
+        </if>
+        <if test="parentTable != null and parentTable != ''">
+            AND a.parent_table = #{parentTable}
+        </if>
+        ORDER BY a.name ASC
+    </select>
+    <update id="buildTable" statementType="STATEMENT">
+        ${sql}
+    </update>
+
+    <delete id="deleteById">
+       delete from gen_table where id=#{id}
+    </delete>
+</mapper>

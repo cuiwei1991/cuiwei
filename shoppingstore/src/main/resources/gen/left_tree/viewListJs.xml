@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+	<name>viewListJS</name>
+	<filePath>src/main/webapp/assets/modules/${moduleName}/${subModuleName}</filePath>
+	<fileName>${className}List.js</fileName>
+	<content><![CDATA[
+layui.use(['layer', 'form', 'admin', 'ax', 'ztree', 'laydate', 'table'], function () {
+    var $ = layui.jquery;
+    var layer = layui.layer;
+    var form = layui.form;
+    var $ax = layui.ax;
+    var $ZTree = layui.ztree;
+    var admin = layui.admin;
+    var laydate = layui.laydate;
+    var table = layui.table;
+
+    /**
+     * 定义全程变量
+     */
+    var ${ClassName} = {
+        tableId: "dataTable",    //表格id
+        treeId: "dataTree",    //树id
+        condition: {
+            id: "",
+            <#list table.childList as child>
+<#list child.columnList as c>
+<#if c.isQuery == '1'>
+			${c.javaField}:"",
+</#if>
+</#list>
+<#break>
+</#list>
+            relationTreeId: ""
+        }
+    };
+
+    <#list table.childList as child>
+	var urlPrefix = "/${moduleName}<#if subModuleName != "">/${subModuleName}</#if>/${child.className?uncap_first}";
+	<#break>
+	</#list>
+
+	/**
+     * 选择树枝时
+     */
+    ${ClassName}.onClick${ClassName} = function (e, treeId, treeNode) {
+        ${ClassName}.condition.relationTreeId = treeNode.id;
+        ${ClassName}.search();
+    };
+
+    /**
+     * 初始化表格的列
+     */
+    ${ClassName}.initColumn = function () {
+        return [[
+            {type: 'checkbox'},
+            {field: '${table.pkField}', hide:true, title: 'id'},
+            <#list table.childList as child>
+			<#list child.columnList as c>
+            <#if c.isList == '1' && c.javaField != 'parentId' && c.javaField != 'parentIds' && c.isPk != '1'>
+            	<#if c.javaField == child.parentTablePk>
+            	{field: '${c.javaField}Name', sort: true, title: '${c.comments}'},
+            	<#else>
+				{field: '${c.javaField}', sort: true, title: '${c.comments}'},
+				</#if>
+			</#if>
+            </#list>
+			<#break>
+			</#list>
+            {align: 'center', toolbar: '#tableBar', title: '操作', minWidth: 200}
+        ]];
+    };
+
+    /**
+     * 点击查询按钮
+     */
+    ${ClassName}.search = function () {
+        var queryData = {};
+<#list table.childList as child>
+<#list child.columnList as c>
+<#if c.isQuery == '1'>
+        queryData['${c.javaField}'] = ${"$"}("${"#"}${c.javaField}Id").val();
+</#if>
+</#list>
+<#break>
+</#list>
+		queryData['relationTreeId'] = ${ClassName}.condition.relationTreeId;
+        table.reload(${ClassName}.tableId, {where: queryData});
+    };
+
+    /** 初始化左侧部门树 */
+    var zTree = new $ZTree("dataTree", "/${urlPrefix}/tree");
+    var rMenu = $("#rMenu");
+    var selectedNode = "";
+    /** 初始化左侧部门树 */
+    var setting = {
+        data: {
+            simpleData: {
+                enable: true
+            }
+        },
+        callback: {
+            onRightClick: OnRightClick,
+            onClick: ${ClassName}.onClick${ClassName}
+        }
+    };
+    function OnRightClick(event, treeId, treeNode) {
+        if (!treeNode && event.target.tagName.toLowerCase() != "button" && $(event.target).parents("a").length == 0) {
+            showRMenu("root", event.clientX, event.clientY);
+        } else if (treeNode) {
+            selectedNode = treeNode;
+            showRMenu("node", event.clientX, event.clientY);
+        }
+    }
+    //显示右键菜单
+    function showRMenu(type, x, y) {
+        $("#rMenu ul").show();
+        rMenu.css({"top":y+"px", "left":x+"px", "visibility":"visible"}); //设置右键菜单的位置、可见
+        $("body").bind("mousedown", onBodyMouseDown);
+    }
+    //隐藏右键菜单
+    function hideRMenu() {
+        if (rMenu) rMenu.css({"visibility": "hidden"}); //设置右键菜单不可见
+        $("body").unbind("mousedown", onBodyMouseDown);
+    }
+    //鼠标按下事件
+    function onBodyMouseDown(event){
+        if (!(event.target.id == "rMenu" || $(event.target).parents("#rMenu").length>0)) {
+            rMenu.css({"visibility" : "hidden"});
+        }
+    }
+
+    ${ClassName}.addTreeNode = function(){
+        admin.putTempData('formOk', false);
+        top.layui.admin.open({
+            type: 2,
+            title: '添加',
+            content: Feng.ctxPath + '/${urlPrefix}/index_add?id=' + selectedNode.id,
+            end: function () {
+                zTree.init();
+            }
+        });
+    }
+    ${ClassName}.editTreeNode = function(){
+        admin.putTempData('formOk', false);
+        top.layui.admin.open({
+            type: 2,
+            title: '编辑',
+            content: Feng.ctxPath + '/${urlPrefix}/index_edit?id=' + selectedNode.id,
+            end: function () {
+                zTree.init();
+            }
+        });
+    }
+    ${ClassName}.removeTreeNode = function(){
+        var operation = function () {
+            var ajax = new $ax(Feng.ctxPath + "/${urlPrefix}/remove", function () {
+                Feng.success("删除成功!");
+                zTree.init();
+            }, function (data) {
+                Feng.error(data.msg);
+            });
+            ajax.set("id", selectedNode.id);
+            ajax.start();
+        };
+        Feng.confirm("是否删除选中的记录?", operation);
+    }
+
+    $('#m_add').click(function () {
+        hideRMenu();
+        ${ClassName}.addTreeNode();
+    });
+    $('#m_edit').click(function () {
+        hideRMenu();
+        ${ClassName}.editTreeNode();
+    });
+    $('#m_remove').click(function () {
+        hideRMenu();
+        ${ClassName}.removeTreeNode();
+    });
+
+    zTree.bindOnClick(${ClassName}.onClick${ClassName});
+    zTree.setSettings(setting);
+    zTree.init();
+
+    /**
+     * 添加子节点数据
+     */
+    ${ClassName}.onAddSub = function () {
+        admin.putTempData('formOk', false);
+        top.layui.admin.open({
+            type: 2,
+            title: '添加',
+            content: Feng.ctxPath + urlPrefix + '/index_add?treeId=' + ${ClassName}.condition.relationTreeId,
+            end: function () {
+                admin.getTempData('formOk') && table.reload(${ClassName}.tableId);
+            }
+        });
+    };
+
+    /**
+     * 编辑子节点数据
+     */
+    ${ClassName}.onEditSub = function (data) {
+        admin.putTempData('formOk', false);
+        top.layui.admin.open({
+            type: 2,
+            title: '编辑',
+            content: Feng.ctxPath + urlPrefix + '/index_edit?id=' + data.${table.pkField},
+            end: function () {
+                admin.getTempData('formOk') && table.reload(${ClassName}.tableId);
+            }
+        });
+    };
+
+    /**
+     * 删除子节点数据
+     *
+     * @param data 点击按钮时候的行数据
+     */
+    ${ClassName}.onRemoveSub = function (data) {
+        var operation = function () {
+            var ajax = new $ax(Feng.ctxPath + urlPrefix + "/remove", function () {
+                Feng.success("删除成功!");
+                table.reload(${ClassName}.tableId);
+            }, function (data) {
+                Feng.error(data.msg);
+            });
+            ajax.set("id", data.${table.pkField});
+            ajax.start();
+        };
+        Feng.confirm("是否删除选中的记录?", operation);
+    };
+
+    // 渲染表格
+    var tableResult = table.render({
+        elem: '#' + ${ClassName}.tableId,
+        url: Feng.ctxPath + urlPrefix + '/list',
+        page: true,
+        height: "full-98",
+        cellMinWidth: 100,
+        cols: ${ClassName}.initColumn()
+    });
+
+
+    /** 搜索按钮点击事件 */
+    $('#btnSearch').click(function () {
+        ${ClassName}.search();
+    });
+
+    /** 添加按钮点击事件 */
+    $('#btnAdd').click(function () {
+        ${ClassName}.openAdd${ClassName}();
+    });
+
+    /** 添加按钮点击事件 */
+    $('#btnAddSub').click(function () {
+        ${ClassName}.onAddSub();
+    });
+
+    /** 工具条点击事件 */
+    table.on('tool(' + ${ClassName}.tableId + ')', function (obj) {
+        var data = obj.data;
+        var layEvent = obj.event;
+
+        if (layEvent === 'edit') {
+            ${ClassName}.onEdit${ClassName}(data);
+        } else if (layEvent === 'remove') {
+            ${ClassName}.onRemove${ClassName}(data);
+        } else if (layEvent === 'editSub') {
+            ${ClassName}.onEditSub(data);
+        } else if (layEvent === 'removeSub') {
+            ${ClassName}.onRemoveSub(data);
+        }
+    });
+
+<#list table.columnList as c>
+	<#if c.isQuery == '1'>
+		<#if c.showType == "select" && c.dictType?? && c.dictType != "">
+    /** 初始化select */
+	var ajax${c.javaField?cap_first} = new $ax(Feng.ctxPath + "/sys/dictType/dictType?dictType=${c.dictType}");
+    var result${c.javaField?cap_first} = ajax${c.javaField?cap_first}.start();
+    if(result${c.javaField?cap_first}.code === 0){
+		for (var i = 0; i < result${c.javaField?cap_first}.data.length; i++) {
+			var code = result${c.javaField?cap_first}.data[i].code;
+			var name = result${c.javaField?cap_first}.data[i].name;
+			$('select[name=${c.javaField}]').append('<option value="' + code + '">' + name + '</option>');
+		}
+    }
+    form.render('select', '${className}Form');
+		<#elseif c.showType == "dateselect">
+			<#if c.queryType ?? && c.queryType == 'between'>
+	/** 初始化时间选择器 */
+	laydate.render({
+        elem: '#begin${c.javaField?cap_first}Id', type: 'datetime'
+    });
+	laydate.render({
+        elem: '#end${c.javaField?cap_first}Id', type: 'datetime'
+    });
+			<#else>
+	laydate.render({
+        elem: '#${c.javaField}Id', type: 'datetime'
+    });
+			</#if>
+		</#if>
+	</#if>
+</#list>
+
+});
+]]>
+	</content>
+</template>

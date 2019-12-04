@@ -1,0 +1,72 @@
+@layout("/common/_container.html",{bg:"bg-white",js:["/assets/modules/sys/dict/dictTypeForm.js"]}){
+<style>
+    .layui-form-label {
+        text-align: left;
+    }
+</style>
+<div class="layui-container">
+    <form id="addForm" class="layui-form" lay-filter="dataForm">
+        <br>
+        <br>
+        <div class="layui-form-item layui-row">
+				<input name="dictTypeId" type="hidden"/>
+				 <div class=" layui-col-md6">
+					<label class="layui-form-label">字典编码:<span style="color: red;">*</span></label>
+					<div class="layui-input-block">
+						<input name="code" id="codeId" placeholder="请输入字典类型编码" type="text" class="layui-input" required/>
+					</div>
+				</div>
+				 <div class=" layui-col-md6">
+					<label class="layui-form-label">字典名称:<span style="color: red;">*</span></label>
+					<div class="layui-input-block">
+						<input name="name" id="nameId" placeholder="请输入字典类型名称" type="text" class="layui-input" required/>
+					</div>
+				</div>
+				 <div class=" layui-col-md6">
+					<label class="layui-form-label">字典描述:</label>
+					<div class="layui-input-block">
+						<input name="deion" id="deionId" placeholder="请输入字典描述" type="text" class="layui-input" required/>
+					</div>
+				</div>
+				 <div class=" layui-col-md6">
+					<label class="layui-form-label">排序:</label>
+					<div class="layui-input-block">
+						<input name="sort" id="sortId" placeholder="请输入排序" type="text" class="layui-input" required/>
+					</div>
+				</div>
+        </div>
+        <div class="layui-row">
+            <div class="layui-tab layui-tab-card"  style="margin-top: 0px">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">添加详情</li>
+                </ul>
+
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+						<div class="layui-btn-container">
+							<div class="layui-btn layui-btn-normal" id="addBtnDict"><i class="layui-icon">&#xe654;</i>增加</div>
+							<div class="layui-btn layui-btn-danger" id="delBtnDict"><i class="layui-icon layui-icon-delete"></i>删除</div>
+						</div>
+                        <!-- 数据表格 -->
+                        <table class="layui-hide" id="dataTableDict" lay-filter="dataTableDict">
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <br>
+        <div class="layui-row">
+            <div class="layui-btn-container" style="float: right;">
+                <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+                <button class="layui-btn layui-btn-normal" lay-submit="" lay-filter="btnSubmit">保存</button>
+            </div>
+        </div>
+    </form>
+    <br>
+</div>
+<script>
+</script>
+@}

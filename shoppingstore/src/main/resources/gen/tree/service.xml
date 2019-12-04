@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+    <name>service</name>
+    <filePath>src/main/java/${packageName}/${moduleName}/${subModuleName}/service</filePath>
+    <fileName>${ClassName}Service.java</fileName>
+    <content><![CDATA[
+package ${packageName}.${moduleName}<#if subModuleName != "">.${subModuleName}</#if>.service;
+
+import java.util.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.sailei.common.service.R;
+import com.sailei.common.utils.IdUtils;
+import com.sailei.common.base.ZTreeNode;
+import org.springframework.transaction.annotation.Transactional;
+import com.sailei.common.utils.ToolUtils;
+import ${packageName}.${moduleName}<#if subModuleName != "">.${subModuleName}</#if>.entity.${ClassName};
+import ${packageName}.${moduleName}<#if subModuleName != "">.${subModuleName}</#if>.mapper.${ClassName}Mapper;
+
+/**
+ * ${table.comments}服务类
+ *
+ * @Author ${functionAuthor}
+ * @Date ${functionDate}
+ */
+@Service
+public class ${ClassName}Service{
+
+	@Autowired
+    private ${ClassName}Mapper ${className}Mapper;
+
+    /**
+     * 获取列表
+     *
+     * @Author ${functionAuthor}
+     * @Date ${functionDate}
+     */
+    public List<${ClassName}> select${ClassName}Tree() {
+        return ${className}Mapper.queryPage();
+    }
+
+    /**
+     * 获取单个实体
+     *
+     * @Author ${functionAuthor}
+     * @Date ${functionDate}
+     */
+    public ${ClassName} getById(String id) {
+        return ${className}Mapper.getById(id);
+    }
+
+    /**
+     * 获取树结构
+     *
+     * @Author ${functionAuthor}
+     * @Date ${functionDate}
+     */
+    public List<ZTreeNode> tree() {
+        return ${className}Mapper.tree();
+    }
+
+	/**
+     * 根据条件查询列表
+     *
+     * @Author ${functionAuthor}
+     * @Date ${functionDate}
+     */
+    public R save(${ClassName} ${className}) {
+        /** 是否需要设置主键 */
+        <#if table.genIdType != "1">
+        String id= IdUtils.getNumberId();
+        ${className}.set${table.pkField?cap_first}(id);
+        </#if>
+        /**设置parentIds和levels*/
+        ${className} = ${className}SetParentId(${className});
+        Date now = new Date();
+        ${className}.setCreateDate(now);
+        ${className}.setUpdateDate(now);
+        ${className}Mapper.save(${className});
+        return R.ok();
+    }
+
+    /**
+     * 设置父节点
+     *
+     * @Author ${functionAuthor}
+     * @Date ${functionDate}
+     */
+    private ${ClassName} ${className}SetParentId(${ClassName} ${className}) {
+
+        if (ToolUtils.isEmpty(${className}.getParentId()) || "0".equals(${className}.getParentId())) {
+            ${className}.setParentId("0");
+            ${className}.setParentName("顶级");
+            ${className}.setParentIds("0,");
+        } else {
+            String pid = ${className}.getParentId();
+            ${ClassName} parent = ${className}Mapper.getById(pid);
+
+            /** 如果编号和父编号一致会导致无限递归 */
+            if (${className}.getId() != null && ${className}.getId().equals(${className}.getParentId())) {
+                throw new RuntimeException("如果编号和父编号一致会导致无限递归");
+            }
+
+            ${className}.setParentIds(parent.getParentIds() + parent.getId() + ",");
+        }
+        return ${className};
+    }
+
+    /**
+     * 修改记录
+     */
+    public R updateById(${ClassName} ${className}) {
+        /**设置parentIds和levels*/
+        ${className} = ${className}SetParentId(${className});
+        ${className}.setUpdateDate(new Date());
+        ${className}Mapper.updateById(${className});
+        return R.ok();
+    }
+
+    /**
+     * 移除记录
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public R remove(String id) {
+        ${className}Mapper.remove(id);
+        /** 删除所有子节点 */
+        ${className}Mapper.removeRelation(id);
+        return R.ok();
+    }
+
+}]]>
+    </content>
+</template>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sailei.modules.sys.mapper.DictMapper">
+
+	<!-- 通用结果集 -->
+	<sql id="Base_Column_List">
+				a.dict_id AS dictId,
+		a.dict_type_id AS dictTypeId,
+		a.code AS code,
+		a.name AS name,
+		a.sort AS sort,
+		a.deion AS deion,
+		a.del_flag AS delFlag
+	</sql>
+
+	<sql id="dictJoins">
+		LEFT JOIN sys_dict_type b ON b.dict_type_id = a.dict_type_id
+	</sql>
+
+	<!-- 根据记录ID获取记录 -->
+    <select id="getById" resultType="com.sailei.modules.sys.entity.Dict">
+		SELECT
+			 <include refid="Base_Column_List"/>
+		FROM sys_dict a
+		WHERE a.del_flag='0' and a.dict_id = #{id}
+	</select>
+
+    <!-- 根据条件获取记录列表 -->
+    <select id="queryPage" resultType="com.sailei.modules.sys.entity.Dict">
+        SELECT
+        	<include refid="Base_Column_List"/>
+        FROM sys_dict a
+		WHERE a.del_flag='0'
+		<choose>
+            <when test="orderBy != null and orderBy != ''">
+                ORDER BY ${orderBy}
+            </when>
+            <otherwise>
+                ORDER BY a.dict_id DESC
+            </otherwise>
+        </choose>
+        <if test="page !=null and page != -1 and limit != null and limit != ''">
+            limit ${page},${limit}
+        </if>
+    </select>
+
+  	<!-- 根据条件获取记录列表条数 -->
+    <select id="queryCount" resultType="java.lang.Long">
+        SELECT
+            COUNT(1)
+       FROM sys_dict a
+		WHERE a.del_flag='0'
+    </select>
+
+	<!-- 根据字典类型查询列表 -->
+	<select id="getByType" resultType="com.sailei.modules.sys.entity.Dict">
+		SELECT
+		<include refid="Base_Column_List"></include>
+		FROM sys_dict a LEFT JOIN sys_dict_type b ON a.dict_type_id=b.dict_type_id
+		WHERE a.del_flag=0 AND b.del_flag=0 AND b.code=#{dictType}
+	</select>
+
+	<!-- 保存记录 -->
+	<insert id="save">
+		INSERT INTO sys_dict(
+				dict_id,
+		dict_type_id,
+		code,
+		name,
+		sort,
+		deion
+		) VALUES (
+				#{dictId},
+		#{dictTypeId},
+		#{code},
+		#{name},
+		#{sort},
+		#{deion}
+		)
+	</insert>
+
+	<!-- 根据ID更新记录 -->
+	<update id="updateById">
+		UPDATE sys_dict SET
+				dict_type_id = #{dictTypeId},
+		code = #{code},
+		name = #{name},
+		sort = #{sort},
+		deion = #{deion}
+		WHERE dict_id = #{dictId}
+	</update>
+
+	<!--根据ID移除记录-->
+	<update id="remove">
+		UPDATE sys_dict SET del_flag='1' WHERE dict_id = #{id}
+	</update>
+
+	<!--根据父节点ID移除记录-->
+	<update id="removeByParentId">
+		update sys_dict
+		set del_flag='1'
+		WHERE dict_type_id = #{id}
+	</update>
+
+	<!-- 根据记录ID获取记录 -->
+    <select id="getByParentId" resultType="com.sailei.modules.sys.entity.Dict">
+		SELECT
+			 <include refid="Base_Column_List"/>
+		FROM sys_dict a
+		<include refid="dictJoins"/>
+		WHERE a.del_flag='0' and a.dict_type_id = #{id}
+	</select>
+</mapper>

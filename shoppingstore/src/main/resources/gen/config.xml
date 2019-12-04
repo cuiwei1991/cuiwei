@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+	<!-- 生成分类 -->
+	<category>
+		<category value="curd" label="单表">
+			<template>curd/controller.xml</template>
+			<template>curd/service.xml</template>
+			<template>curd/mapper.xml</template>
+			<template>curd/entity.xml</template>
+			<template>curd/mapperXml.xml</template>
+			<template>curd/viewListJS.xml</template>
+			<template>curd/viewList.xml</template>
+			<template>curd/viewEdit.xml</template>
+			<template>curd/viewEditJs.xml</template>
+			<template>curd/viewAdd.xml</template>
+			<template>curd/viewAddJs.xml</template>
+		</category>
+		<category value="curd_many" label="主附表">
+			<template>curd_many/controller.xml</template>
+			<template>curd_many/service.xml</template>
+			<template>curd_many/mapper.xml</template>
+			<template>curd_many/entity.xml</template>
+			<template>curd_many/mapperXml.xml</template>
+			<template>curd_many/viewListJs.xml</template>
+			<template>curd_many/viewList.xml</template>
+			<template>curd_many/viewFormJs.xml</template>
+			<template>curd_many/viewForm.xml</template>
+			<childTable>
+				<template>curd_many/mapper.xml</template>
+				<template>curd_many/entity.xml</template>
+				<template>curd_many/mapperXml.xml</template>
+			</childTable>
+		</category>
+		<category value="tree" label="树结构">
+			<template>tree/controller.xml</template>
+			<template>tree/service.xml</template>
+			<template>tree/mapper.xml</template>
+			<template>tree/entity.xml</template>
+			<template>tree/mapperXml.xml</template>
+			<template>tree/viewListJS.xml</template>
+			<template>tree/viewList.xml</template>
+			<template>tree/viewEdit.xml</template>
+			<template>tree/viewEditJs.xml</template>
+			<template>tree/viewAdd.xml</template>
+			<template>tree/viewAddJs.xml</template>
+		</category>
+		<category value="left_tree" label="左树右表">
+			<template>left_tree/controller.xml</template>
+			<template>left_tree/service.xml</template>
+			<template>left_tree/mapper.xml</template>
+			<template>left_tree/entity.xml</template>
+			<template>left_tree/mapperXml.xml</template>
+			<template>left_tree/viewListJs.xml</template>
+			<template>left_tree/viewList.xml</template>
+			<template>left_tree/viewEdit.xml</template>
+			<template>left_tree/viewEditJs.xml</template>
+			<template>left_tree/viewAdd.xml</template>
+			<template>left_tree/viewAddJs.xml</template>
+			<childTable>
+				<template>left_tree/sub/controller.xml</template>
+				<template>left_tree/sub/service.xml</template>
+				<template>left_tree/sub/mapper.xml</template>
+				<template>left_tree/sub/entity.xml</template>
+				<template>left_tree/sub/mapperXml.xml</template>
+				<template>left_tree/sub/viewEdit.xml</template>
+				<template>left_tree/sub/viewEditJs.xml</template>
+				<template>left_tree/sub/viewAdd.xml</template>
+				<template>left_tree/sub/viewAddJs.xml</template>
+			</childTable>
+		</category>
+	</category>
+	<!-- java类型 -->
+	<javaType>
+		<dict value="String" label="String"/>
+		<dict value="Long" label="Long"/>
+		<dict value="Integer" label="Integer"/>
+		<dict value="Double" label="Double"/>
+		<dict value="byte[]" label="byte"/>
+		<dict value="java.util.Date" label="Date"/>
+	</javaType>
+	<!-- 查询类型 -->
+	<queryType>
+		<dict value="=" label="="/>
+		<dict value="!=" label="!="/>
+		<dict value="&gt;" label="&gt;"/>
+		<dict value="&gt;=" label="&gt;="/>
+		<dict value="&lt;" label="&lt;"/>
+		<dict value="&lt;=" label="&lt;="/>
+		<dict value="between" label="Between"/>
+		<dict value="like" label="Like"/>
+		<dict value="left_like" label="Left Like"/>
+		<dict value="right_like" label="Right Like"/>
+	</queryType>
+	<!-- 字段显示类型 -->
+	<showType>
+		<dict value="input" label="单行文本"/>
+		<dict value="textarea" label="多行文本"/>
+		<dict value="text" label="富文本"/>
+		<dict value="select" label="下拉选项"/>
+		<dict value="radiobox" label="单选按钮"/>
+		<dict value="checkbox" label="复选框"/>
+		<dict value="dateselect" label="日期选择"/>
+		<dict value="userselect" label="人员选择"/>
+		<dict value="officeselect" label="部门选择"/>
+		<dict value="areaselect" label="区域选择"/>
+		<dict value="treeselect" label="树选择控件"/>
+		<dict value="fileselect" label="文件上传选择"/>
+	</showType>
+</config>

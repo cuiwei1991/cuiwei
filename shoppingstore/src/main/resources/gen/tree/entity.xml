@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<template>
+  <name>entity</name>
+  <filePath>src/main/java/${packageName}/${moduleName}/${subModuleName}/entity</filePath>
+  <fileName>${ClassName}.java</fileName>
+  <content><![CDATA[
+package ${packageName}.${moduleName}<#if subModuleName != "">.${subModuleName}</#if>.entity;
+
+<#list table.importList as i>
+import ${i};
+</#list>
+
+/**
+ * ${table.comments}实体类
+ *
+ * @Author ${functionAuthor}
+ * @Date ${functionDate}
+ */
+public class ${ClassName}{
+
+<#-- 生成字段属性 -->
+<#list table.columnList as c>
+    /**
+     * ${c.comments}
+     */
+    private ${c.simpleJavaType} ${c.simpleJavaField};
+</#list>
+    /**
+     * 父名称
+     */
+    private String parentName;
+<#-- 范围条件字段get和set方法 -->
+<#list table.columnList as c>
+    public ${c.simpleJavaType} get${c.simpleJavaField?cap_first}() {
+        return ${c.simpleJavaField};
+    }
+
+    public void set${c.simpleJavaField?cap_first}(${c.simpleJavaType} ${c.simpleJavaField}) {
+        this.${c.simpleJavaField} = ${c.simpleJavaField};
+    }
+
+</#list>
+    public String getParentName() {
+        return parentName;
+    }
+
+    public void setParentName(String parentName) {
+        this.parentName = parentName;
+    }
+}
+]]> </content>
+</template>

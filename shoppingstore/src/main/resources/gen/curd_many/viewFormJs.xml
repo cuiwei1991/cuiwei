@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="utf-8"?>
+<template>
+	<name>viewListJS</name>
+	<filePath>src/main/webapp/assets/modules/${moduleName}/${subModuleName}</filePath>
+	<fileName>${className}Form.js</fileName>
+	<content><![CDATA[
+layui.use(['layer', 'form', 'admin', 'ax', 'table', 'element', 'layedit','upload'], function () {
+    var $ = layui.jquery;
+    var $ax = layui.ax;
+    var form = layui.form;
+    var admin = layui.admin;
+    var layer = layui.layer;
+    var table = layui.table;
+    var element = layui.element;
+
+    var paramsId = Feng.getUrlParam('id');
+
+    /** 让当前iframe弹层高度适应 */
+    admin.iframeAuto();
+    <#list table.columnList as c>
+    	<#if c.isInsert == '1'>
+    	<#if c.showType == "dateselect">
+	/** 初始化时间选择器 */
+    $('.datetime').each(function(){
+        laydate.render({
+            elem: this
+            ,trigger: 'click',
+            type: 'datetime',
+            range: $(this).hasClass('date-range')
+        });
+    });
+    <#break>
+        </#if>
+        </#if>
+    </#list>
+    <#list table.columnList as c>
+    	<#if c.isInsert == '1'>
+    	<#if c.showType == "select" && c.dictType?? && c.dictType != "">
+    /** 初始化select */
+	var ajax${c.javaField?cap_first} = new $ax(Feng.ctxPath + "/sys/dictType/dictType?dictType=${c.dictType}");
+    var result${c.javaField?cap_first} = ajax${c.javaField?cap_first}.start();
+    if(result${c.javaField?cap_first}.code === 0){
+		for (var i = 0; i < result${c.javaField?cap_first}.data.length; i++) {
+			var code = result${c.javaField?cap_first}.data[i].code;
+			var name = result${c.javaField?cap_first}.data[i].name;
+			$('select[name=${c.javaField}]').append('<option value="' + code + '">' + name + '</option>');
+		}
+    }
+    form.render('select', '${className}Form');
+        </#if>
+        </#if>
+    <#if c.showType == "text">
+    /** 富文本 */
+	layui.use('layedit', function(){
+	  var layedit = layui.layedit;
+	  layedit.build('${c.javaField}Id'); //建立编辑器
+	});
+
+	</#if>
+    </#list>
+<#list table.childList as child>
+    var dataTable${child.className?cap_first} = {
+        elem: '#dataTable${child.className?cap_first}',
+        id: 'dataTable${child.className?cap_first}',
+        title: '子表数据',
+        cols: [[
+            {type: 'numbers'},
+            {type: 'checkbox'},
+			<#list child.columnList as c>
+            <#if c.isInsert?? && c.isInsert == "1" && c.name != child.parentTableFk && c.isPk != "1" && c.javaField != 'createDate' && c.javaField != 'updateDate' && c.javaField != 'delFlag'>
+			{field: '${c.javaField}', sort: true, title: '${c.comments}', edit: 'text'},
+			</#if>
+            </#list>
+        ]],
+        data: [
+        ],
+        page: false,
+        limit:30
+    };
+    table.render(dataTable${child.className?cap_first});
+    admin.iframeAuto();
+
+    /** 增加按钮监听 */
+    $('#addBtn${child.className?cap_first}').click(function () {
+        var row_sort = dataTable${child.className?cap_first}.data.length;
+			dataTable${child.className?cap_first}.data.push({ row_sort: row_sort,
+			 <#list table.columnList as c>
+			 <#if c.isList?? && c.isList == "1">
+			 ${c.javaField}: '',
+			 </#if>
+			 </#list>
+			 LAY_CHECKED: true});
+        table.reload('dataTable${child.className?cap_first}', dataTable${child.className?cap_first});
+        admin.iframeAuto();
+    });
+    /** 删除按钮监听 */
+    $('#delBtn${child.className?cap_first}').click(function () {
+        var checkStatus = table.checkStatus('dataTable${child.className?cap_first}');
+        if (checkStatus.data.length == 0) {
+            layer.msg('请选择需要删除的数据');
+        } else {
+            layer.confirm('真的删除选中的数据么?', function(index){
+                layer.close(index);
+                delDataFor${child.className?cap_first}(checkStatus);
+                table.reload('dataTable${child.className?cap_first}', dataTable${child.className?cap_first});
+                admin.iframeAuto();
+            });
+        }
+    });
+    /** 删除行 */
+    function delDataFor${child.className?cap_first}(datas) {
+        for (var i = 0; i < datas.data.length; i++) {
+            var row_sort = datas.data[i].row_sort;
+            for (var j = dataTable${child.className?cap_first}.data.length -1; j >= 0; j--) {
+                if (dataTable${child.className?cap_first}.data[j].row_sort == row_sort) {
+                    dataTable${child.className?cap_first}.data.splice(j, 1)
+                }
+            }
+        }
+        /** 重置sort = index */
+        for (var k = 0; k < dataTable${child.className?cap_first}.data.length; k++) {
+            dataTable${child.className?cap_first}.data[k].row_sort = k;
+        }
+
+    }
+    /** 根据sort 获取数据在 data 中的 索引 */
+    function getDataIndex${child.className?cap_first}(row_sort) {
+        for (var i = 0; i < dataTable${child.className?cap_first}.data.length; i++) {
+            if (dataTable${child.className?cap_first}.data[i].row_sort == row_sort) {
+                return i;
+            }
+        }
+    }
+    /** 监听行选中事件 */
+    table.on('checkbox(dataTable${child.className?cap_first})', function(obj){
+        if (obj.type == 'all') {
+            for (var i = 0; i < dataTable${child.className?cap_first}.data.length; i++) {
+                dataTable${child.className?cap_first}.data[i].LAY_CHECKED = obj.checked;
+            }
+        } else if (obj.type == 'one') {
+            var index = getDataIndex${child.className?cap_first}(obj.data.row_sort);
+            dataTable${child.className?cap_first}.data[index].LAY_CHECKED = obj.checked;
+        }
+    });
+    /** 监听列名、说明 修改事件 */
+    table.on('edit(dataTable${child.className?cap_first})', function (obj) {
+        var row_sort = obj.data.row_sort;
+        var key = obj.field;
+        var value = obj.value;
+        var index = getDataIndex${child.className?cap_first}(row_sort);
+        dataTable${child.className?cap_first}.data[index][key] = value;
+    });
+</#list>
+	/** form 提交 */
+    form.on('submit(btnSubmit)', function (data) {
+        var formData = {
+        <#assign columnField>
+		<#list table.columnList as c>
+			<#if c.isInsert == '1'>
+			${c.javaField}: data.field.${c.javaField},
+			</#if>
+		</#list>
+		</#assign>
+           ${columnField?substring(0, columnField?last_index_of(","))}
+        };
+        <#list table.childList as child>
+        var tableData${child.className?cap_first} = [];
+        for (var i = 0; i < dataTable${child.className?cap_first}.data.length; i++) {
+                var item = {
+                 <#assign columnField>
+					<#list child.columnList as c>
+					<#if c.isInsert?? && c.isInsert == "1" && c.isPk != '1' && c.name != child.parentTableFk>
+					${c.javaField}: dataTable${child.className?cap_first}.data[i].${c.javaField},
+					</#if>
+					</#list>
+					</#assign>
+                    ${columnField?substring(0, columnField?last_index_of(","))}
+                };
+                tableData${child.className?cap_first}.push(item);
+        }
+        console.log(tableData${child.className?cap_first});
+		</#list>
+        var ajax = new $ax(Feng.ctxPath + "/${urlPrefix}/add", function (data) {
+        	if(data.code === 0){
+        		Feng.success('保存成功');
+        		/**传给上个页面，刷新table用 */
+                admin.putTempData('formOk', true);
+                admin.closeThisDialog();
+        	}else{
+        		Feng.error(data.msg);
+        	}
+
+        }, function (data) {
+            Feng.error(data.msg);
+        });
+        <#list table.childList as c>
+        ajax.set('${c.className?uncap_first}MapList', tableData${c.className?cap_first});
+		</#list>
+        ajax.set('id', paramsId);
+        for (var key in formData) {
+            ajax.set(key, formData[key]);
+        }
+        ajax.start();
+    });
+
+    /**
+     * 设置子表数据
+     */
+    function setTableData() {
+        if (paramsId) {
+            console.log('编辑');
+            var ajax = new $ax(Feng.ctxPath + "/${urlPrefix}/edit", function (data) {
+                var formData = {
+                <#assign columnField>
+				<#list table.columnList as c>
+					<#if c.isInsert?? && c.isInsert == "1">
+			        ${c.javaField}: data.${className}.${c.javaField},
+			        </#if>
+				</#list>
+				</#assign>
+           			 ${columnField?substring(0, columnField?last_index_of(","))}
+                };
+                form.val('${className}Form', formData);
+                <#list table.childList as child>
+                var list = data.${className}.${child.className?uncap_first}List;
+                var array${child.className?cap_first} = [];
+                for (var i = 0; i < list.length; i++) {
+                    var item = {
+                        row_sort: i,
+                        <#assign childField>
+						<#list child.columnList as c>
+						<#if c.isInsert?? && c.isInsert == "1" && c.name != child.parentTableFk>
+						${c.javaField}: list[i].${c.javaField},
+						</#if>
+						</#list>
+						</#assign>
+						${childField?substring(0, childField?last_index_of(","))}
+                    };
+                    array${child.className?cap_first}.push(item);
+                }
+                dataTable${child.className?cap_first}.data = array${child.className?cap_first};
+                table.render(dataTable${child.className?cap_first});
+				</#list>
+            }, function (data) {
+				Feng.error(data.msg);
+            });
+            ajax.set('id', paramsId);
+            ajax.start();
+        } else {
+            console.log('添加');
+        }
+    }
+    setTableData();
+
+<#list table.childList as child>
+	<#list child.columnList as c>
+		<#if c.isInsert == '1'>
+		<#if c.showType == "select">
+	var ajax = new $ax(Feng.ctxPath + "/sys/dictType/dictType?dictType=${c.dictType}");
+    var result = ajax.start();
+    if(result.code === 0){
+		for (var i = 0; i < result.data.length; i++) {
+			var code = result.data[i].code;
+			var name = result.data[i].name;
+			$('select[name=${c.javaField}]').append('<option value="' + code + '">' + name + '</option>');
+		}
+    }
+    form.render('select', 'dataTable${child.className?cap_first}');
+
+    /** 监听物理类型选中事件 */
+    form.on('select(dataTable${child.className?cap_first}_${c.javaField})', function (obj) {
+        var value = obj.value;
+        var row_sort = obj.elem.name;
+        var index = getDataIndex${child.className?cap_first}(row_sort);
+        dataTable${child.className?cap_first}.data[index].${c.javaField} = value;
+        $("#${c.javaField}_" + index).val(value);
+        console.log(dataTable${child.className?cap_first}.data[index].${c.javaField})
+    });
+		</#if>
+    	</#if>
+	</#list>
+</#list>
+});
+]]>
+	</content>
+</template>
