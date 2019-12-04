@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Dao.UserMapper">
+    <select id="get" parameterType="String" resultType="Entity.User">
+		select *
+		from user
+		where loginname = #{loginname}
+    </select>
+    <select id="getByLoginname" resultType="Entity.User">
+		select *
+		from user
+		where loginname = #{loginname} and password = #{password}
+    </select>
+    <insert id="setuser" >
+		insert into  user (loginname,password,username)values(#{loginname},#{password},#{username})
+    </insert>
+    <update id="updatepassword">
+		update user set password=#{newpassword} where loginname=#{loginname}
+	</update>
+</mapper>

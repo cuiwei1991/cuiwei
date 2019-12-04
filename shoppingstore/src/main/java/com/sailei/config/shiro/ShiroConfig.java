@@ -108,7 +108,8 @@ public class ShiroConfig {
         hashMap.put("/webjars/**", "anon");
         hashMap.put("/swagger-resources", "anon");
         hashMap.put("/v2/api-docs", "anon");
-        hashMap.put("/com/cuiwei/**", "anon");
+        hashMap.put("/usercuiwei/**", "anon");
+        hashMap.put("/user/user_add", "anon");
         /** 附带API接口-end */
 
         hashMap.put("/assets/**", "anon");
