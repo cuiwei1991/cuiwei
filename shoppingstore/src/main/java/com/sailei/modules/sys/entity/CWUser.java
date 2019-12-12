@@ -1,8 +1,8 @@
-package com.cuiwei.entity;
+package com.sailei.modules.sys.controller;
 
 import java.io.Serializable;
 
-public class User implements Serializable {
+public class CWUser implements Serializable {
     private int id;
     private String loginname;
 
@@ -10,7 +10,7 @@ public class User implements Serializable {
 
     private String password;
 
-    public User() {
+    public CWUser() {
     }
 
     public int getId() {
